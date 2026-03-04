@@ -1,0 +1,107 @@
+---
+title: Installation
+description: Install the Create Zustand CLI tool to start creating stores
+---
+
+The Create Zustand CLI needs to be installed locally and linked globally on your system. Follow these steps to get started.
+
+## Prerequisites
+
+Before installing the CLI, make sure you have:
+
+- Node.js (version 14 or higher)
+- npm or yarn package manager
+- Git (for cloning the repository)
+
+## Installation steps
+
+<Steps>
+  <Step title="Clone the repository">
+    Clone the Create Zustand CLI repository from GitHub:
+
+    ```bash
+    git clone https://github.com/abubakardev0/zustand-store-cli.git
+    ```
+  </Step>
+
+  <Step title="Navigate to the directory">
+    Change into the project directory:
+
+    ```bash
+    cd zustand-store-cli
+    ```
+  </Step>
+
+  <Step title="Install dependencies">
+    Install the required npm packages:
+
+    ```bash
+    npm install
+    ```
+
+    This installs the following dependencies:
+    - `zustand` - The state management library
+    - `chalk` - For colorful terminal output
+    - `commander` - For CLI command parsing
+    - `inquirer` - For interactive prompts
+    - `fs-extra` - For enhanced file system operations
+  </Step>
+
+  <Step title="Link the CLI globally">
+    Make the CLI available globally on your system:
+
+    ```bash
+    npm link
+    ```
+
+    This creates a global symlink to the CLI, allowing you to run `create-zustand-store` from any directory.
+  </Step>
+</Steps>
+
+## Verify installation
+
+To verify the CLI was installed correctly, run:
+
+```bash
+create-zustand-store --version
+```
+
+You should see the version number `1.0.0` displayed.
+
+<Note>
+If you encounter permission errors when running `npm link`, you may need to use `sudo npm link` on macOS/Linux or run your terminal as administrator on Windows.
+</Note>
+
+## Alternative: Using yarn
+
+If you prefer yarn, you can use it instead of npm:
+
+<CodeGroup>
+```bash npm
+npm install
+npm link
+```
+
+```bash yarn
+yarn install
+yarn link
+```
+</CodeGroup>
+
+## Uninstalling
+
+If you need to uninstall the CLI, navigate to the project directory and run:
+
+```bash
+npm unlink -g create-zustand-store
+```
+
+Then you can safely delete the cloned repository.
+
+## Next steps
+
+Now that you have the CLI installed, you're ready to create your first Zustand store.
+
+<Card title="Quick start" icon="rocket" href="/quickstart">
+  Learn how to create your first store with the CLI
+</Card>

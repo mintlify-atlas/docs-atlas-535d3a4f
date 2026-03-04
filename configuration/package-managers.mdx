@@ -1,0 +1,175 @@
+---
+title: Package Managers
+description: How the CLI supports npm and yarn for dependency installation
+---
+
+The Create Zustand CLI supports both npm and yarn for installing dependencies. You can choose your preferred package manager during the interactive prompts or set a default in your configuration file.
+
+## Selecting a Package Manager
+
+During the CLI prompts, you'll see:
+
+```
+➤ Choose your package manager:
+  npm
+  yarn
+```
+
+Select your preference using the arrow keys and press Enter.
+
+## Setting a Default
+
+You can set a default package manager in your `zustand-store-config.json`:
+
+```json
+{
+  "packageManager": "yarn"
+}
+```
+
+Valid values are:
+- `"npm"` (default)
+- `"yarn"`
+
+## How Dependency Installation Works
+
+After generating your store file, the CLI automatically checks if Zustand is installed in your project.
+
+### Check for Existing Installation
+
+The CLI runs a check command based on your selected package manager:
+
+```bash
+# npm
+npm list zustand
+
+# yarn
+yarn list zustand
+```
+
+### Install if Missing
+
+If Zustand is not found, the CLI installs it automatically:
+
+```bash
+# npm
+npm install zustand
+
+# yarn
+yarn add zustand
+```
+
+You'll see a message during installation:
+```
+⚙ Installing zustand...
+```
+
+And upon completion:
+```
+✔ zustand installed successfully.
+```
+
+### Skip if Already Installed
+
+If Zustand is already installed, you'll see:
+```
+✔ zustand is already installed.
+```
+
+## Package Manager Differences
+
+The CLI handles the differences between npm and yarn automatically:
+
+| Action | npm Command | yarn Command |
+|--------|-------------|---------------|
+| Check installation | `npm list zustand` | `yarn list zustand` |
+| Install package | `npm install zustand` | `yarn add zustand` |
+
+Notice that:
+- npm uses `install` for adding packages
+- yarn uses `add` for adding packages
+
+The CLI determines the correct command based on your selection:
+
+```javascript
+const installCommand = packageManager === "yarn" ? "add" : "install";
+exec(`${packageManager} ${installCommand} zustand`);
+```
+
+## Dependencies Installed
+
+The CLI only installs the core dependency:
+
+- **zustand** - The Zustand state management library
+
+<Note>
+If you choose to add persistence, the CLI generates code that imports from `zustand/middleware`, but this is included in the main zustand package - no additional dependencies are needed.
+</Note>
+
+## Workspace and Monorepo Support
+
+Both npm and yarn support workspaces and monorepos. The CLI:
+
+- Runs commands in the current working directory
+- Respects your existing `package.json` and lock files
+- Uses your package manager's standard resolution logic
+
+This means if you're in a workspace, the dependency will be installed according to your workspace configuration.
+
+## Error Handling
+
+If dependency installation fails, you'll see an error message:
+
+```
+✘ Error installing zustand: [error details]
+```
+
+The CLI will still create your store file, but you'll need to manually install Zustand:
+
+```bash
+# Using npm
+npm install zustand
+
+# Using yarn
+yarn add zustand
+```
+
+## Best Practices
+
+### Consistency
+
+Use the same package manager throughout your project:
+- Don't mix npm and yarn in the same project
+- Commit only one lock file (`package-lock.json` for npm, `yarn.lock` for yarn)
+- Set the package manager in your config file to avoid accidentally using the wrong one
+
+### Team Configuration
+
+In a team environment, add `zustand-store-config.json` to version control:
+
+```json
+{
+  "packageManager": "yarn",
+  "fileType": "TypeScript",
+  "storePath": "src/stores"
+}
+```
+
+This ensures everyone uses the same package manager and conventions.
+
+### CI/CD
+
+If you're using the CLI in CI/CD pipelines, ensure:
+- The selected package manager is installed in your CI environment
+- Lock files are committed to version control
+- The appropriate cache is configured (npm cache vs yarn cache)
+
+## Package Manager Detection
+
+The CLI does not auto-detect your package manager. It always asks you to choose, or uses the value from your config file.
+
+If you want to always use the package manager that matches your project's lock file:
+
+1. Check if `yarn.lock` exists → set `"packageManager": "yarn"`
+2. Check if `package-lock.json` exists → set `"packageManager": "npm"`
+3. Save this in your `zustand-store-config.json`

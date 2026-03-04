@@ -1,0 +1,155 @@
+---
+title: Creating a Basic JavaScript Store
+description: Learn how to create a basic Zustand store in JavaScript with initial state and actions
+---
+
+Create a simple Zustand store using JavaScript to manage your application's state. This guide walks you through creating a basic store with initial state and actions.
+
+## What You'll Build
+
+You'll create a basic counter store that demonstrates:
+- Setting up initial state
+- Defining actions to modify state
+- Using the Zustand `create` function
+
+<Steps>
+
+### Run the CLI
+
+Start by running the Create Zustand CLI tool:
+
+```bash
+create-zustand-store
+```
+
+### Configure Your Store
+
+Answer the prompts to configure your store:
+
+<CodeGroup>
+
+```bash Store Name
+➤ What is the name of your store?
+useCounterStore
+```
+
+```bash File Type
+➤ Choose the file type:
+JavaScript
+```
+
+```bash Persistence
+➤ Do you want to add persistence?
+No
+```
+
+```bash Initial State
+➤ Define initial state properties (as JSON):
+{"count": 0}
+```
+
+```bash Actions
+➤ Define actions (comma-separated):
+increment,decrement,reset
+```
+
+</CodeGroup>
+
+### Review the Generated Store
+
+The CLI generates a store file based on this template:
+
+```javascript store/useCounterStore.js
+import { create } from "zustand";
+
+const useCounterStore = create((set) => ({
+  count: 0,
+  actions: {
+    increment: () => set((state) => ({})),
+    decrement: () => set((state) => ({})),
+    reset: () => set((state) => ({}))
+  },
+}));
+
+export default useCounterStore;
+```
+
+### Implement Your Actions
+
+Update the action implementations to actually modify state:
+
+```javascript store/useCounterStore.js
+import { create } from "zustand";
+
+const useCounterStore = create((set) => ({
+  count: 0,
+  actions: {
+    increment: () => set((state) => ({ count: state.count + 1 })),
+    decrement: () => set((state) => ({ count: state.count - 1 })),
+    reset: () => set({ count: 0 })
+  },
+}));
+
+export default useCounterStore;
+```
+
+### Use Your Store
+
+Import and use the store in your React components:
+
+```javascript components/Counter.jsx
+import useCounterStore from '../store/useCounterStore';
+
+function Counter() {
+  const count = useCounterStore((state) => state.count);
+  const { increment, decrement, reset } = useCounterStore(
+    (state) => state.actions
+  );
+
+  return (
+    <div>
+      <h1>Count: {count}</h1>
+      <button onClick={increment}>Increment</button>
+      <button onClick={decrement}>Decrement</button>
+      <button onClick={reset}>Reset</button>
+    </div>
+  );
+}
+
+export default Counter;
+```
+
+</Steps>
+
+## Understanding the Template
+
+The CLI uses this template structure from `templates/store.js`:
+
+```javascript
+import { create } from "zustand";
+
+const use__STORE_NAME__ = create((set) => ({
+  __INITIAL_STATE__,
+  actions: {
+    __ACTIONS__,
+  },
+}));
+
+export default use__STORE_NAME__;
+```
+
+The placeholders are replaced with:
+- `__STORE_NAME__`: Your store name (e.g., `CounterStore`)
+- `__INITIAL_STATE__`: Your JSON state properties (e.g., `count: 0`)
+- `__ACTIONS__`: Your comma-separated actions as function stubs
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="TypeScript Store" icon="code" href="/guides/typescript-store">
+    Add type safety to your stores
+  </Card>
+  <Card title="Persistent Store" icon="database" href="/guides/persistent-store">
+    Save state to localStorage
+  </Card>
+</CardGroup>

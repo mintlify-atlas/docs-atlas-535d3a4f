@@ -1,0 +1,408 @@
+---
+title: User Store Example
+description: Learn how to create a user management store with authentication and profile updates using Create Zustand CLI
+---
+
+This example demonstrates how to create a user management store using the Create Zustand CLI. You'll see how to handle user authentication, profile data, and related actions.
+
+## CLI Interaction
+
+When you run `create-zustand-store`, configure it for a user management store:
+
+```bash
+$ create-zustand-store
+
+      ╔════════════════════════════════════════╗
+      ║                                        ║
+      ║        Zustand Store CLI Tool          ║
+      ║    Easily create and manage stores     ║
+      ║                                        ║
+      ╚════════════════════════════════════════╝
+
+➤ What is the name of your store? useUserStore
+➤ Choose the file type: TypeScript
+➤ Do you want to add persistence? Yes
+➤ Define initial state properties (as JSON): {"user":null,"isAuthenticated":false,"isLoading":false}
+➤ Define actions (comma-separated): login,logout,updateProfile,setLoading
+➤ Choose your package manager: npm
+➤ Enter the custom path for the store directory: store
+➤ Do you want to save these settings as default? No
+
+✔ Zustand store "useUserStore" created successfully in the "store" directory.
+```
+
+## Generated Store Code
+
+The CLI generates a store with persistence middleware:
+
+<Tabs>
+  <Tab title="TypeScript">
+    ```typescript store/useUserStore.ts
+    import { create } from "zustand";
+    import { persist } from "zustand/middleware";
+
+    interface State {
+      user: null;
+      isAuthenticated: boolean;
+      isLoading: boolean;
+      actions: {
+        login: () => void;
+        logout: () => void;
+        updateProfile: () => void;
+        setLoading: () => void;
+      };
+    }
+
+    const useUserStore = create(
+      persist<State>(
+        (set) => ({
+          user: null,
+          isAuthenticated: false,
+          isLoading: false,
+          actions: {
+            login: () => set((state) => ({})),
+            logout: () => set((state) => ({})),
+            updateProfile: () => set((state) => ({})),
+            setLoading: () => set((state) => ({})),
+          },
+        }),
+        {
+          name: "useUserStore",
+        }
+      )
+    );
+
+    export default useUserStore;
+    ```
+  </Tab>
+  <Tab title="JavaScript">
+    ```javascript store/useUserStore.js
+    import { create } from "zustand";
+    import { persist } from "zustand/middleware";
+
+    const useUserStore = create(
+      persist(
+        (set) => ({
+          user: null,
+          isAuthenticated: false,
+          isLoading: false,
+          actions: {
+            login: () => set((state) => ({})),
+            logout: () => set((state) => ({})),
+            updateProfile: () => set((state) => ({})),
+            setLoading: () => set((state) => ({})),
+          },
+        }),
+        {
+          name: "useUserStore",
+        }
+      )
+    );
+
+    export default useUserStore;
+    ```
+  </Tab>
+</Tabs>
+
+## Customizing Actions
+
+After generating the store, implement the authentication and user management logic:
+
+<Tabs>
+  <Tab title="TypeScript">
+    ```typescript store/useUserStore.ts
+    import { create } from "zustand";
+    import { persist } from "zustand/middleware";
+
+    interface User {
+      id: string;
+      name: string;
+      email: string;
+      avatar?: string;
+    }
+
+    interface State {
+      user: User | null;
+      isAuthenticated: boolean;
+      isLoading: boolean;
+      actions: {
+        login: (email: string, password: string) => Promise<void>;
+        logout: () => void;
+        updateProfile: (updates: Partial<User>) => void;
+        setLoading: (loading: boolean) => void;
+      };
+    }
+
+    const useUserStore = create(
+      persist<State>(
+        (set) => ({
+          user: null,
+          isAuthenticated: false,
+          isLoading: false,
+          actions: {
+            login: async (email, password) => {
+              set({ isLoading: true });
+              try {
+                // Simulate API call
+                const response = await fetch('/api/login', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ email, password }),
+                });
+                const user = await response.json();
+                set({ user, isAuthenticated: true, isLoading: false });
+              } catch (error) {
+                set({ isLoading: false });
+                throw error;
+              }
+            },
+            logout: () => {
+              set({ user: null, isAuthenticated: false });
+            },
+            updateProfile: (updates) => {
+              set((state) => ({
+                user: state.user ? { ...state.user, ...updates } : null,
+              }));
+            },
+            setLoading: (loading) => {
+              set({ isLoading: loading });
+            },
+          },
+        }),
+        {
+          name: "user-storage",
+        }
+      )
+    );
+
+    export default useUserStore;
+    ```
+  </Tab>
+  <Tab title="JavaScript">
+    ```javascript store/useUserStore.js
+    import { create } from "zustand";
+    import { persist } from "zustand/middleware";
+
+    const useUserStore = create(
+      persist(
+        (set) => ({
+          user: null,
+          isAuthenticated: false,
+          isLoading: false,
+          actions: {
+            login: async (email, password) => {
+              set({ isLoading: true });
+              try {
+                // Simulate API call
+                const response = await fetch('/api/login', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ email, password }),
+                });
+                const user = await response.json();
+                set({ user, isAuthenticated: true, isLoading: false });
+              } catch (error) {
+                set({ isLoading: false });
+                throw error;
+              }
+            },
+            logout: () => {
+              set({ user: null, isAuthenticated: false });
+            },
+            updateProfile: (updates) => {
+              set((state) => ({
+                user: state.user ? { ...state.user, ...updates } : null,
+              }));
+            },
+            setLoading: (loading) => {
+              set({ isLoading: loading });
+            },
+          },
+        }),
+        {
+          name: "user-storage",
+        }
+      )
+    );
+
+    export default useUserStore;
+    ```
+  </Tab>
+</Tabs>
+
+## Using the Store in Components
+
+Here's how to use the user store in your authentication components:
+
+<Tabs>
+  <Tab title="TypeScript">
+    ```tsx LoginForm.tsx
+    import { useState } from 'react';
+    import useUserStore from './store/useUserStore';
+
+    function LoginForm() {
+      const [email, setEmail] = useState('');
+      const [password, setPassword] = useState('');
+      
+      const isLoading = useUserStore((state) => state.isLoading);
+      const { login } = useUserStore((state) => state.actions);
+
+      const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+          await login(email, password);
+        } catch (error) {
+          console.error('Login failed:', error);
+        }
+      };
+
+      return (
+        <form onSubmit={handleSubmit}>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
+            disabled={isLoading}
+          />
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            disabled={isLoading}
+          />
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? 'Logging in...' : 'Login'}
+          </button>
+        </form>
+      );
+    }
+
+    export default LoginForm;
+    ```
+
+    ```tsx UserProfile.tsx
+    import useUserStore from './store/useUserStore';
+
+    function UserProfile() {
+      const user = useUserStore((state) => state.user);
+      const isAuthenticated = useUserStore((state) => state.isAuthenticated);
+      const { logout, updateProfile } = useUserStore(
+        (state) => state.actions
+      );
+
+      if (!isAuthenticated || !user) {
+        return <div>Please log in</div>;
+      }
+
+      return (
+        <div>
+          <img src={user.avatar} alt={user.name} />
+          <h2>{user.name}</h2>
+          <p>{user.email}</p>
+          <button onClick={() => updateProfile({ name: 'New Name' })}>
+            Update Profile
+          </button>
+          <button onClick={logout}>Logout</button>
+        </div>
+      );
+    }
+
+    export default UserProfile;
+    ```
+  </Tab>
+  <Tab title="JavaScript">
+    ```jsx LoginForm.jsx
+    import { useState } from 'react';
+    import useUserStore from './store/useUserStore';
+
+    function LoginForm() {
+      const [email, setEmail] = useState('');
+      const [password, setPassword] = useState('');
+      
+      const isLoading = useUserStore((state) => state.isLoading);
+      const { login } = useUserStore((state) => state.actions);
+
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+          await login(email, password);
+        } catch (error) {
+          console.error('Login failed:', error);
+        }
+      };
+
+      return (
+        <form onSubmit={handleSubmit}>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
+            disabled={isLoading}
+          />
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            disabled={isLoading}
+          />
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? 'Logging in...' : 'Login'}
+          </button>
+        </form>
+      );
+    }
+
+    export default LoginForm;
+    ```
+
+    ```jsx UserProfile.jsx
+    import useUserStore from './store/useUserStore';
+
+    function UserProfile() {
+      const user = useUserStore((state) => state.user);
+      const isAuthenticated = useUserStore((state) => state.isAuthenticated);
+      const { logout, updateProfile } = useUserStore(
+        (state) => state.actions
+      );
+
+      if (!isAuthenticated || !user) {
+        return <div>Please log in</div>;
+      }
+
+      return (
+        <div>
+          <img src={user.avatar} alt={user.name} />
+          <h2>{user.name}</h2>
+          <p>{user.email}</p>
+          <button onClick={() => updateProfile({ name: 'New Name' })}>
+            Update Profile
+          </button>
+          <button onClick={logout}>Logout</button>
+        </div>
+      );
+    }
+
+    export default UserProfile;
+    ```
+  </Tab>
+</Tabs>
+
+## Persistence Benefits
+
+Because you enabled persistence when creating this store, the user's authentication state and profile data will be saved to localStorage. This means:
+
+- Users stay logged in after refreshing the page
+- Profile updates persist across browser sessions
+- The authentication state is automatically restored on app load
+
+The persistence configuration uses the store name (`user-storage`) as the localStorage key. You can customize this in the generated store file.
+
+## Next Steps
+
+- Learn about [counter stores](/examples/counter-store) for simpler state management
+- Explore [todo stores](/examples/todo-store) for array manipulation patterns
+- Check out the [Configuration Guide](/configuration) for more CLI options

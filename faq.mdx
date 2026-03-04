@@ -1,0 +1,225 @@
+---
+title: Frequently Asked Questions
+description: Common questions about the Create Zustand CLI tool
+---
+
+## General Questions
+
+<Accordion title="What is Create Zustand CLI?">
+Create Zustand CLI is a command-line tool that helps you quickly scaffold Zustand stores in your JavaScript or TypeScript projects. It provides an interactive interface to configure your store with options for persistence, initial state, actions, and more.
+</Accordion>
+
+<Accordion title="Do I need to install Zustand separately?">
+No, the CLI will automatically check if Zustand is installed in your project and install it if it's missing. The CLI supports both npm and yarn package managers.
+</Accordion>
+
+<Accordion title="Can I use this CLI with an existing project?">
+Yes! The CLI is designed to work with existing projects. Simply navigate to your project directory and run `create-zustand-store`. The tool will create the store in the directory you specify.
+</Accordion>
+
+<Accordion title="What Node.js version do I need?">
+You need Node.js version 14 or higher, as the CLI uses ES modules and modern JavaScript features. Check your version with `node --version`.
+</Accordion>
+
+## Installation & Setup
+
+<Accordion title="How do I install the CLI?">
+Currently, you need to clone the repository and use npm link:
+
+```bash
+git clone https://github.com/abubakardev0/zustand-store-cli.git
+cd zustand-store-cli
+npm install
+npm link
+```
+
+After linking, you can use the `create-zustand-store` command from anywhere.
+</Accordion>
+
+<Accordion title="Why do I need to use npm link?">
+npm link creates a global symlink to the CLI tool, allowing you to run it from any directory on your system. This is necessary because the package is not yet published to the npm registry.
+</Accordion>
+
+<Accordion title="Can I uninstall the CLI?">
+Yes, to unlink the CLI:
+
+```bash
+cd zustand-store-cli
+npm unlink
+```
+
+Or globally:
+
+```bash
+npm unlink -g create-zustand-store
+```
+</Accordion>
+
+## Using the CLI
+
+<Accordion title="What is a store name?">
+The store name is the name of your Zustand hook. By convention, it starts with "use" (e.g., `useStore`, `useCartStore`, `useAuthStore`). This becomes both the function name and the filename.
+</Accordion>
+
+<Accordion title="Should I choose JavaScript or TypeScript?">
+Choose TypeScript if your project uses TypeScript. The CLI will generate properly typed stores with interfaces. Choose JavaScript for plain JS projects. You can always convert between them later.
+</Accordion>
+
+<Accordion title="How do I define the initial state?">
+Provide the initial state as valid JSON. Examples:
+
+- Simple: `{"count": 0}`
+- Complex: `{"user": {"name": "John", "age": 30}, "isLoggedIn": false}`
+- Array: `{"items": [], "total": 0}`
+
+<Warning>
+Make sure to use valid JSON syntax with quotes around property names!
+</Warning>
+</Accordion>
+
+<Accordion title="What are actions?">
+Actions are methods that modify your store's state. Enter them as comma-separated names (e.g., `increment,decrement,reset`). The CLI generates empty implementations that you'll need to fill in with your logic.
+</Accordion>
+
+<Accordion title="Can I save my configuration for reuse?">
+Yes! When the CLI asks "Do you want to save these settings as default?", answer yes. This creates a `zustand-store-config.json` file in your project that will pre-fill answers for future stores.
+</Accordion>
+
+## Zustand & State Management
+
+<Accordion title="What is Zustand?">
+Zustand is a small, fast, and scalable state management solution for React. It uses hooks and doesn't require wrapping your app in providers. Learn more at [zustand.docs.pmnd.rs](https://zustand.docs.pmnd.rs/).
+</Accordion>
+
+<Accordion title="Do I need to wrap my app in a provider?">
+No! Unlike Redux or Context API, Zustand doesn't require providers. Just import and use your store hook directly in any component.
+</Accordion>
+
+<Accordion title="Can I use multiple stores?">
+Absolutely! Run `create-zustand-store` multiple times to create different stores for different concerns (e.g., `useAuthStore`, `useCartStore`, `useUIStore`).
+</Accordion>
+
+<Accordion title="How do I use the generated store in my components?">
+Import the hook and use it in your component:
+
+```javascript
+import useStore from './store/useStore';
+
+function Counter() {
+  const count = useStore((state) => state.count);
+  const increment = useStore((state) => state.actions.increment);
+  
+  return <button onClick={increment}>{count}</button>;
+}
+```
+</Accordion>
+
+## Persistence
+
+<Accordion title="What does persistence mean?">
+Persistence automatically saves your store's state to localStorage (in browsers) or AsyncStorage (in React Native). When the app reloads, the state is restored from storage.
+</Accordion>
+
+<Accordion title="When should I use persistence?">
+Use persistence when you want state to survive page refreshes, such as:
+
+- User preferences (theme, language)
+- Shopping cart contents
+- Form draft data
+- Authentication state
+
+<Note>
+Don't persist sensitive data like passwords or tokens in localStorage!
+</Note>
+</Accordion>
+
+<Accordion title="Can I use persistence with React Native?">
+The generated store uses Zustand's persist middleware, which supports AsyncStorage for React Native. You'll need to configure it manually after generation:
+
+```typescript
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+persist(
+  (set) => ({ /* ... */ }),
+  {
+    name: 'store-name',
+    storage: AsyncStorage,
+  }
+)
+```
+</Accordion>
+
+<Accordion title="How do I clear persisted data?">
+In the browser, you can clear localStorage:
+
+```javascript
+localStorage.removeItem('your-store-name');
+// or clear everything
+localStorage.clear();
+```
+
+Or use the browser's DevTools > Application > Local Storage.
+</Accordion>
+
+## Customization
+
+<Accordion title="Can I change the store directory location?">
+Yes! The CLI asks for a custom path. Enter any relative path like:
+
+- `store` (default)
+- `src/store`
+- `lib/state`
+- `hooks/stores`
+</Accordion>
+
+<Accordion title="Can I modify the generated store?">
+Absolutely! The generated files are yours to customize. The CLI just provides a starting point. Add your own logic, types, middleware, or restructure as needed.
+</Accordion>
+
+<Accordion title="Can I add more actions later?">
+Yes, just edit the generated store file and add new actions to the actions object. You don't need to regenerate the entire store.
+</Accordion>
+
+## Troubleshooting
+
+<Accordion title="The command is not found after npm link">
+Ensure npm's global bin directory is in your PATH. Run:
+
+```bash
+npm config get prefix
+```
+
+Add this to your PATH in `~/.bashrc` or `~/.zshrc`:
+
+```bash
+export PATH="$(npm config get prefix)/bin:$PATH"
+```
+
+See the [Troubleshooting guide](/troubleshooting) for more solutions.
+</Accordion>
+
+<Accordion title="I get a JSON parsing error">
+Make sure your initial state is valid JSON with quotes around property names and string values:
+
+- ✅ Correct: `{"count": 0, "name": "test"}`
+- ❌ Wrong: `{count: 0, name: test}`
+</Accordion>
+
+<Accordion title="The generated actions don't do anything">
+The CLI generates empty action implementations. You need to add your logic:
+
+```typescript
+actions: {
+  increment: () => set((state) => ({ count: state.count + 1 })),
+  decrement: () => set((state) => ({ count: state.count - 1 })),
+}
+```
+</Accordion>
+
+<Accordion title="Where can I get more help?">
+Check out:
+
+- [Troubleshooting guide](/troubleshooting) for common issues
+- [GitHub repository](https://github.com/abubakardev0/zustand-store-cli) for issues and discussions
+- [Zustand documentation](https://zustand.docs.pmnd.rs/) for state management questions
+</Accordion>

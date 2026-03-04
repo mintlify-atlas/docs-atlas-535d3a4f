@@ -1,80 +1,240 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: Quick start
+description: Create your first Zustand store using the Create Zustand CLI
 ---
 
-## Get started in three steps
+This guide will walk you through creating your first Zustand store using the CLI. You'll learn how to use the interactive prompts and understand what gets generated.
 
-Get your documentation site running locally and make your first customization.
+## Create your first store
 
-### Step 1: Set up your local environment
+Navigate to your project directory and run the CLI:
 
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
+```bash
+create-zustand-store
+```
 
-### Step 2: Deploy your changes
+You'll see the welcome banner:
 
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
+```
+╔════════════════════════════════════════╗
+║                                        ║
+║        Zustand Store CLI Tool          ║
+║    Easily create and manage stores     ║
+║                                        ║
+╚════════════════════════════════════════╝
+```
 
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
+## Interactive prompts
 
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
+The CLI will guide you through several prompts to configure your store:
 
-### Step 3: Go live
+<Steps>
+  <Step title="Store name">
+    Choose a name for your store:
 
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
+    ```
+    ➤ What is the name of your store? (useStore)
+    ```
+
+    <Note>
+    Store names typically follow the pattern `useStoreName` (e.g., `useCounterStore`, `useUserStore`).
+    </Note>
+  </Step>
+
+  <Step title="File type">
+    Select whether you want JavaScript or TypeScript:
+
+    ```
+    ➤ Choose the file type: (Use arrow keys)
+    ❯ JavaScript
+      TypeScript
+    ```
+
+    TypeScript stores include full type definitions and interfaces.
+  </Step>
+
+  <Step title="Persistence">
+    Decide if you want to add state persistence:
+
+    ```
+    ➤ Do you want to add persistence? (y/N)
+    ```
+
+    Answering "yes" adds the Zustand persist middleware, which saves your state to localStorage.
+  </Step>
+
+  <Step title="Initial state">
+    Define your store's initial state as JSON:
+
+    ```
+    ➤ Define initial state properties (as JSON, e.g., {"count":0} or {"user":{"name":"John","age":30}}): ({})
+    ```
+
+    Examples:
+    - Simple counter: `{"count":0}`
+    - User data: `{"user":{"name":"","email":""}}`
+    - Shopping cart: `{"items":[],"total":0}`
+  </Step>
+
+  <Step title="Actions">
+    Specify actions for your store (comma-separated):
+
+    ```
+    ➤ Define actions (comma-separated, e.g., increment,reset):
+    ```
+
+    Examples:
+    - `increment,decrement,reset`
+    - `addItem,removeItem,clearCart`
+    - `login,logout,updateProfile`
+  </Step>
+
+  <Step title="Package manager">
+    Choose your preferred package manager:
+
+    ```
+    ➤ Choose your package manager: (Use arrow keys)
+    ❯ npm
+      yarn
+    ```
+
+    The CLI uses this to install Zustand if it's not already in your project.
+  </Step>
+
+  <Step title="Store path">
+    Specify where to create the store file:
+
+    ```
+    ➤ Enter the custom path for the store directory: (store)
+    ```
+
+    Common paths include `store`, `stores`, `src/store`, or `src/stores`.
+  </Step>
+
+  <Step title="Save configuration">
+    Optionally save your settings as defaults:
+
+    ```
+    ➤ Do you want to save these settings as default? (y/N)
+    ```
+
+    If you answer "yes", a `zustand-store-config.json` file is created with your preferences.
+  </Step>
+</Steps>
+
+## Example: Counter store
+
+Let's create a simple counter store:
+
+<CodeGroup>
+```bash Prompts
+What is the name of your store? useCounterStore
+Choose the file type: TypeScript
+Do you want to add persistence? No
+Define initial state properties: {"count":0}
+Define actions: increment,decrement,reset
+Choose your package manager: npm
+Enter the custom path for the store directory: src/store
+Do you want to save these settings as default? No
+```
+
+```typescript Generated store (src/store/useCounterStore.ts)
+import { create } from "zustand";
+
+interface State {
+  count: number;
+  actions: {
+    increment: () => void;
+    decrement: () => void;
+    reset: () => void;
+  };
+}
+
+const useCounterStore = create<State>((set) => ({
+  count: 0,
+  actions: {
+    increment: () => set((state) => ({})),
+    decrement: () => set((state) => ({})),
+    reset: () => set((state) => ({})),
+  },
+}));
+
+export default useCounterStore;
+```
+</CodeGroup>
+
+<Note>
+The generated actions include placeholder implementations with `set((state) => ({}))`. You'll need to implement the actual logic for each action.
+</Note>
+
+## What happens next
+
+After you complete the prompts, the CLI will:
+
+1. Create the store directory if it doesn't exist
+2. Generate the store file with your configuration
+3. Check if Zustand is installed in your project
+4. Install Zustand automatically if needed
+5. Display a success message
+
+You'll see output like:
+
+```
+✔ Zustand store "useCounterStore" created successfully in the "src/store" directory.
+✔ zustand is already installed.
+```
+
+## Using your store
+
+Once created, you can import and use your store in any component:
+
+```tsx
+import useCounterStore from './store/useCounterStore';
+
+function Counter() {
+  const count = useCounterStore((state) => state.count);
+  const { increment, decrement, reset } = useCounterStore((state) => state.actions);
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={increment}>Increment</button>
+      <button onClick={decrement}>Decrement</button>
+      <button onClick={reset}>Reset</button>
+    </div>
+  );
+}
+```
+
+## Implementing actions
+
+Remember to implement the actual logic for your actions. Here's how the counter actions should look:
+
+```typescript
+actions: {
+  increment: () => set((state) => ({ count: state.count + 1 })),
+  decrement: () => set((state) => ({ count: state.count - 1 })),
+  reset: () => set({ count: 0 }),
+}
+```
+
+## Using saved configurations
+
+If you saved your configuration, the CLI will automatically load it the next time you run `create-zustand-store`. You'll see:
+
+```
+✔ Loaded default configuration.
+```
+
+All prompts will use your saved values as defaults, which you can accept or override.
 
 ## Next steps
 
-Now that you have your docs running, explore these key features:
-
 <CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
+  <Card title="Configuration" icon="gear" href="/configuration/config-file">
+    Learn about advanced configuration options
+  </Card>
+  <Card title="Templates" icon="file-code" href="/configuration/templates">
+    Understand the generated store templates
+  </Card>
 </CardGroup>
-
-<Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
-</Note>

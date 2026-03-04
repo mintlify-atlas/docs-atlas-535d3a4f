@@ -1,0 +1,81 @@
+---
+title: 'create-zustand-store'
+description: 'Create a new Zustand store with an interactive CLI'
+---
+
+## Overview
+
+The `create-zustand-store` command is the main CLI tool for generating Zustand stores. When you run the command, it launches an interactive prompt that guides you through configuring your store.
+
+## Usage
+
+```bash
+npx create-zustand-store
+```
+
+Or if you've installed it globally:
+
+```bash
+create-zustand-store
+```
+
+## Interactive Prompts
+
+When you run the command, you'll be prompted to configure your store with the following options:
+
+1. **Store name** - The name of your store (default: `useStore`)
+2. **File type** - Choose between JavaScript or TypeScript
+3. **Persistence** - Whether to add persistence to your store
+4. **Initial state** - Define your initial state properties as JSON
+5. **Actions** - Define store actions (comma-separated)
+6. **Package manager** - Choose between npm or yarn
+7. **Store path** - Custom directory path for the store
+8. **Save configuration** - Save your settings as defaults for future use
+
+## What It Does
+
+The command will:
+
+1. Create a new Zustand store file in your specified directory
+2. Generate the store with your initial state and actions
+3. Automatically install Zustand if it's not already installed
+4. Optionally save your configuration for future store creation
+
+## Configuration File
+
+If you choose to save your configuration, the CLI creates a `zustand-store-config.json` file in your project root. This file stores your default preferences and is automatically loaded when you run the command again.
+
+## Example Workflow
+
+```bash
+$ npx create-zustand-store
+
+╔════════════════════════════════════════╗
+║                                        ║
+║        Zustand Store CLI Tool          ║
+║    Easily create and manage stores     ║
+║                                        ║
+╚════════════════════════════════════════╝
+
+? What is the name of your store? useCounter
+? Choose the file type: TypeScript
+? Do you want to add persistence? Yes
+? Define initial state properties: {"count":0}
+? Define actions: increment,decrement,reset
+? Choose your package manager: npm
+? Enter the custom path for the store directory: src/store
+? Do you want to save these settings as default? Yes
+
+✔ Zustand store "useCounter" created successfully in the "src/store" directory.
+✔ Configuration saved to zustand-store-config.json
+```
+
+## Next Steps
+
+After creating your store:
+
+1. Import and use the store in your React components
+2. Customize the generated actions to implement your business logic
+3. Add additional state properties and actions as needed
+
+For more details on available options, see the [Options](/commands/options) documentation.

@@ -1,0 +1,253 @@
+---
+title: Templates
+description: Understand how the CLI uses templates and placeholder replacement to generate Zustand stores
+---
+
+The Create Zustand CLI uses template files to generate your store code. These templates contain placeholders that are dynamically replaced with your configuration values.
+
+## Template Files
+
+The CLI includes four built-in template files:
+
+- `store.js` - JavaScript store without persistence
+- `store.ts` - TypeScript store without persistence
+- `store-persist.js` - JavaScript store with persistence middleware
+- `store-persist.ts` - TypeScript store with persistence middleware
+
+The CLI automatically selects the appropriate template based on your choices for file type and persistence.
+
+## Template Selection Logic
+
+```javascript
+const fileExtension = fileType === "TypeScript" ? "ts" : "js";
+const templateFileName = addPersist
+  ? `store-persist.${fileExtension}`
+  : `store.${fileExtension}`;
+```
+
+This means:
+- JavaScript + No Persist → `store.js`
+- JavaScript + Persist → `store-persist.js`
+- TypeScript + No Persist → `store.ts`
+- TypeScript + Persist → `store-persist.ts`
+
+## Template Placeholders
+
+The CLI replaces the following placeholders in your template files:
+
+### `__STORE_NAME__`
+
+**Replaced with**: Your store name (e.g., `useCounterStore`)
+
+**Used for**:
+- The store variable name
+- The persistence key (in persist templates)
+- The exported function name
+
+**Example**:
+```typescript
+// Template
+const use__STORE_NAME__ = create<State>((set) => ({
+  // ...
+}));
+
+export default use__STORE_NAME__;
+
+// Becomes
+const useCounterStore = create<State>((set) => ({
+  // ...
+}));
+
+export default useCounterStore;
+```
+
+### `__INITIAL_STATE__`
+
+**Replaced with**: Your initial state properties (without outer braces)
+
+**Used for**: The initial state values in the store
+
+**Example**:
+```javascript
+// Template
+const useStore = create((set) => ({
+  __INITIAL_STATE__,
+  actions: {
+    __ACTIONS__,
+  },
+}));
+
+// With initialState: { count: 0, isLoading: false }
+// Becomes
+const useStore = create((set) => ({
+  count: 0,
+  isLoading: false,
+  actions: {
+    __ACTIONS__,
+  },
+}));
+```
+
+### `__INITIAL_STATE_TYPES__`
+
+**Replaced with**: TypeScript type definitions for your initial state
+
+**Used for**: The TypeScript interface (TypeScript templates only)
+
+**Example**:
+```typescript
+// Template
+interface State {
+  __INITIAL_STATE_TYPES__;
+  actions: {
+    __ACTIONS_TYPES__;
+  };
+}
+
+// With initialState: { count: 0, user: { name: "John", age: 30 } }
+// Becomes
+interface State {
+  count: number;
+  user: {
+    name: string;
+    age: number
+  };
+  actions: {
+    __ACTIONS_TYPES__;
+  };
+}
+```
+
+### `__ACTIONS_TYPES__`
+
+**Replaced with**: TypeScript type definitions for your actions
+
+**Used for**: The actions interface (TypeScript templates only)
+
+**Example**:
+```typescript
+// Template
+interface State {
+  __INITIAL_STATE_TYPES__;
+  actions: {
+    __ACTIONS_TYPES__;
+  };
+}
+
+// With actions: "increment,decrement,reset"
+// Becomes
+interface State {
+  __INITIAL_STATE_TYPES__;
+  actions: {
+    increment: () => void;
+    decrement: () => void;
+    reset: () => void;
+  };
+}
+```
+
+### `__ACTIONS__`
+
+**Replaced with**: Action method implementations
+
+**Used for**: The actual action functions in the store
+
+**Example**:
+```javascript
+// Template
+const useStore = create((set) => ({
+  __INITIAL_STATE__,
+  actions: {
+    __ACTIONS__,
+  },
+}));
+
+// With actions: "increment,reset"
+// Becomes
+const useStore = create((set) => ({
+  __INITIAL_STATE__,
+  actions: {
+    increment: () => set((state) => ({})),
+    reset: () => set((state) => ({}))
+  },
+}));
+```
+
+<Note>
+The generated action implementations are empty (`({})`). You'll need to add your custom logic after generation.
+</Note>
+
+## Type Inference
+
+The CLI automatically infers TypeScript types from your initial state values:
+
+| JavaScript Type | Generated TypeScript Type |
+|----------------|---------------------------|
+| `number` | `number` |
+| `string` | `string` |
+| `boolean` | `boolean` |
+| `null` | `null` |
+| `array` | `any[]` |
+| `object` | Nested object type |
+
+## Template Structure Examples
+
+### Basic TypeScript Template
+
+```typescript
+import { create } from "zustand";
+
+interface State {
+  __INITIAL_STATE_TYPES__;
+  actions: {
+    __ACTIONS_TYPES__;
+  };
+}
+
+const use__STORE_NAME__ = create<State>((set) => ({
+  __INITIAL_STATE__,
+  actions: {
+    __ACTIONS__,
+  },
+}));
+
+export default use__STORE_NAME__;
+```
+
+### Persist TypeScript Template
+
+```typescript
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+
+interface State {
+  __INITIAL_STATE_TYPES__;
+  actions: {
+    __ACTIONS_TYPES__;
+  };
+}
+
+const __STORE_NAME__ = create(
+  persist<State>(
+    (set) => ({
+      __INITIAL_STATE__,
+      actions: {
+        __ACTIONS__,
+      },
+    }),
+    {
+      name: "__STORE_NAME__",
+    }
+  )
+);
+
+export default __STORE_NAME__;
+```
+
+## Customizing Templates
+
+The templates are located in the `templates/` directory of the CLI package. While you can modify them, be aware that:
+
+- Changes will be lost when updating the package
+- All placeholders must remain intact for the CLI to work correctly
+- Template paths are resolved relative to the CLI's installation directory

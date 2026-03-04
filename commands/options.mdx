@@ -1,0 +1,156 @@
+---
+title: 'CLI Options'
+description: 'Detailed reference for all create-zustand-store CLI options'
+---
+
+## Overview
+
+When you run `create-zustand-store`, you'll be prompted to configure the following options. If you have a saved configuration file, the CLI will load your previous settings as defaults.
+
+## Options Reference
+
+<ParamField path="storeName" type="string" default="useStore">
+  The name of your Zustand store. This will be used as the filename and the export name.
+  
+  **Examples:**
+  - `useCounter`
+  - `useUserStore`
+  - `useAuthStore`
+  
+  The generated file will be named `{storeName}.js` or `{storeName}.ts` depending on your file type choice.
+</ParamField>
+
+<ParamField path="fileType" type="string" default="JavaScript">
+  The programming language for your store file.
+  
+  **Choices:**
+  - `JavaScript` - Creates a `.js` file
+  - `TypeScript` - Creates a `.ts` file with type definitions
+  
+  TypeScript stores include automatically generated type interfaces for your state and actions.
+</ParamField>
+
+<ParamField path="addPersist" type="boolean" default="false">
+  Whether to add persistence to your store using Zustand's persist middleware.
+  
+  When enabled, your store's state will be automatically saved to localStorage and restored on page reload.
+  
+  **Example:**
+  - `true` - Uses the persist template
+  - `false` - Uses the standard template
+</ParamField>
+
+<ParamField path="initialState" type="JSON object" default="{}">
+  Define the initial state properties for your store as a JSON object.
+  
+  **Format:** Must be valid JSON syntax
+  
+  **Examples:**
+  ```json
+  {"count": 0}
+  ```
+  
+  ```json
+  {"user": {"name": "John", "age": 30}}
+  ```
+  
+  ```json
+  {"items": [], "loading": false, "error": null}
+  ```
+  
+  The CLI automatically infers TypeScript types from your initial state values:
+  - Numbers become `number`
+  - Strings become `string`
+  - Booleans become `boolean`
+  - Arrays become `any[]`
+  - Objects become `object`
+</ParamField>
+
+<ParamField path="actions" type="string" default="">
+  Define the actions (methods) for your store as a comma-separated list.
+  
+  **Format:** Comma-separated action names (no spaces)
+  
+  **Examples:**
+  ```
+  increment,decrement,reset
+  ```
+  
+  ```
+  login,logout,updateProfile
+  ```
+  
+  ```
+  addItem,removeItem,clearCart
+  ```
+  
+  Each action is generated as a function that accepts the `set` function. You'll need to implement the logic inside each action after generation.
+  
+  **Generated TypeScript signature:**
+  ```typescript
+  actionName: () => void
+  ```
+  
+  **Generated implementation:**
+  ```javascript
+  actionName: () => set((state) => ({}))
+  ```
+</ParamField>
+
+<ParamField path="packageManager" type="string" default="npm">
+  Your preferred package manager for installing dependencies.
+  
+  **Choices:**
+  - `npm` - Uses `npm install`
+  - `yarn` - Uses `yarn add`
+  
+  The CLI uses this to automatically install Zustand if it's not already in your project.
+</ParamField>
+
+<ParamField path="storePath" type="string" default="store">
+  The directory path where your store file will be created.
+  
+  **Examples:**
+  - `store` - Creates in `./store/`
+  - `src/store` - Creates in `./src/store/`
+  - `src/stores` - Creates in `./src/stores/`
+  
+  The directory will be created automatically if it doesn't exist.
+</ParamField>
+
+<ParamField path="saveConfig" type="boolean" default="false">
+  Whether to save your current configuration as the default for future store creation.
+  
+  When enabled, your settings are saved to `zustand-store-config.json` in your project root.
+  
+  **Saved configuration includes:**
+  - storeName
+  - fileType
+  - addPersist
+  - initialState
+  - actions
+  - packageManager
+  - storePath
+  
+  The next time you run `create-zustand-store`, these values will be used as defaults in the prompts.
+</ParamField>
+
+## Configuration File
+
+When you save your configuration, it's stored in `zustand-store-config.json`:
+
+```json
+{
+  "storeName": "useCounter",
+  "fileType": "TypeScript",
+  "addPersist": true,
+  "initialState": {
+    "count": 0
+  },
+  "actions": "increment,decrement,reset",
+  "packageManager": "npm",
+  "storePath": "src/store"
+}
+```
+
+You can manually edit this file to change your defaults, or delete it to reset to the CLI's built-in defaults.

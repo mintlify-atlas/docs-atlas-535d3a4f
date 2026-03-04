@@ -1,0 +1,182 @@
+---
+title: Counter Store Example
+description: Learn how to create a simple counter store with increment, decrement, and reset actions using Create Zustand CLI
+---
+
+This example demonstrates how to create a basic counter store using the Create Zustand CLI. You'll see how to set up state management for a simple counter with increment, decrement, and reset functionality.
+
+## CLI Interaction
+
+When you run `create-zustand-store`, you'll be prompted with a series of questions. Here's how to configure a counter store:
+
+```bash
+$ create-zustand-store
+
+      ╔════════════════════════════════════════╗
+      ║                                        ║
+      ║        Zustand Store CLI Tool          ║
+      ║    Easily create and manage stores     ║
+      ║                                        ║
+      ╚════════════════════════════════════════╝
+
+➤ What is the name of your store? useCounterStore
+➤ Choose the file type: TypeScript
+➤ Do you want to add persistence? No
+➤ Define initial state properties (as JSON): {"count":0}
+➤ Define actions (comma-separated): increment,decrement,reset
+➤ Choose your package manager: npm
+➤ Enter the custom path for the store directory: store
+➤ Do you want to save these settings as default? No
+
+✔ Zustand store "useCounterStore" created successfully in the "store" directory.
+```
+
+## Generated Store Code
+
+The CLI generates the following store file based on your inputs:
+
+<Tabs>
+  <Tab title="TypeScript">
+    ```typescript store/useCounterStore.ts
+    import { create } from "zustand";
+
+    interface State {
+      count: number;
+      actions: {
+        increment: () => void;
+        decrement: () => void;
+        reset: () => void;
+      };
+    }
+
+    const useCounterStore = create<State>((set) => ({
+      count: 0,
+      actions: {
+        increment: () => set((state) => ({ count: state.count + 1 })),
+        decrement: () => set((state) => ({ count: state.count - 1 })),
+        reset: () => set({ count: 0 }),
+      },
+    }));
+
+    export default useCounterStore;
+    ```
+  </Tab>
+  <Tab title="JavaScript">
+    ```javascript store/useCounterStore.js
+    import { create } from "zustand";
+
+    const useCounterStore = create((set) => ({
+      count: 0,
+      actions: {
+        increment: () => set((state) => ({ count: state.count + 1 })),
+        decrement: () => set((state) => ({ count: state.count - 1 })),
+        reset: () => set({ count: 0 }),
+      },
+    }));
+
+    export default useCounterStore;
+    ```
+  </Tab>
+</Tabs>
+
+## Customizing Actions
+
+After generating the store, you'll need to implement the action logic. The CLI creates placeholder actions that you can customize:
+
+<Tabs>
+  <Tab title="TypeScript">
+    ```typescript
+    const useCounterStore = create<State>((set) => ({
+      count: 0,
+      actions: {
+        increment: () => set((state) => ({ count: state.count + 1 })),
+        decrement: () => set((state) => ({ count: state.count - 1 })),
+        reset: () => set({ count: 0 }),
+      },
+    }));
+    ```
+  </Tab>
+  <Tab title="JavaScript">
+    ```javascript
+    const useCounterStore = create((set) => ({
+      count: 0,
+      actions: {
+        increment: () => set((state) => ({ count: state.count + 1 })),
+        decrement: () => set((state) => ({ count: state.count - 1 })),
+        reset: () => set({ count: 0 }),
+      },
+    }));
+    ```
+  </Tab>
+</Tabs>
+
+## Using the Store in a Component
+
+Once you've generated and customized your counter store, you can use it in your React components:
+
+<Tabs>
+  <Tab title="TypeScript">
+    ```tsx Counter.tsx
+    import useCounterStore from './store/useCounterStore';
+
+    function Counter() {
+      const count = useCounterStore((state) => state.count);
+      const { increment, decrement, reset } = useCounterStore(
+        (state) => state.actions
+      );
+
+      return (
+        <div>
+          <h1>Count: {count}</h1>
+          <button onClick={increment}>Increment</button>
+          <button onClick={decrement}>Decrement</button>
+          <button onClick={reset}>Reset</button>
+        </div>
+      );
+    }
+
+    export default Counter;
+    ```
+  </Tab>
+  <Tab title="JavaScript">
+    ```jsx Counter.jsx
+    import useCounterStore from './store/useCounterStore';
+
+    function Counter() {
+      const count = useCounterStore((state) => state.count);
+      const { increment, decrement, reset } = useCounterStore(
+        (state) => state.actions
+      );
+
+      return (
+        <div>
+          <h1>Count: {count}</h1>
+          <button onClick={increment}>Increment</button>
+          <button onClick={decrement}>Decrement</button>
+          <button onClick={reset}>Reset</button>
+        </div>
+      );
+    }
+
+    export default Counter;
+    ```
+  </Tab>
+</Tabs>
+
+## Alternative: Selecting Individual Actions
+
+For better performance, you can select individual actions instead of destructuring the entire actions object:
+
+```tsx
+const increment = useCounterStore((state) => state.actions.increment);
+const decrement = useCounterStore((state) => state.actions.decrement);
+const reset = useCounterStore((state) => state.actions.reset);
+```
+
+This approach ensures that your component only re-renders when the specific state slices you're using change.
+
+## Next Steps
+
+- Learn how to add [persistence](/examples/counter-store#adding-persistence) to your counter store
+- Explore more complex examples like [user management stores](/examples/user-store)
+- Check out [todo list stores](/examples/todo-store) for array manipulation patterns

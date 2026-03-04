@@ -1,0 +1,107 @@
+---
+title: Configuration File
+description: Learn how to use zustand-store-config.json to set default values for your Zustand stores
+---
+
+The `zustand-store-config.json` file allows you to define default values for store creation. When you place this file in your project root, the CLI will automatically load and use these defaults during the interactive prompts.
+
+## File Location
+
+The configuration file must be named `zustand-store-config.json` and placed in your project's root directory (the current working directory where you run the CLI).
+
+## Configuration Options
+
+The configuration file supports the following properties:
+
+| Property | Type | Description | Default |
+|----------|------|-------------|--------|
+| `storeName` | string | Default name for your store | `"useStore"` |
+| `fileType` | string | File type to generate ("JavaScript" or "TypeScript") | `"JavaScript"` |
+| `addPersist` | boolean | Whether to add persistence middleware | `false` |
+| `initialState` | object or string | Default initial state for the store | `{}` |
+| `actions` | string | Comma-separated list of action names | `""` |
+| `packageManager` | string | Package manager to use ("npm" or "yarn") | `"npm"` |
+| `storePath` | string | Directory path where stores will be created | `"store"` |
+
+## Example Configuration
+
+Here's a complete example of a `zustand-store-config.json` file:
+
+```json
+{
+  "storeName": "useCounterStore",
+  "fileType": "TypeScript",
+  "addPersist": true,
+  "initialState": {
+    "count": 0,
+    "isLoading": false
+  },
+  "actions": "increment,decrement,reset",
+  "packageManager": "npm",
+  "storePath": "src/stores"
+}
+```
+
+## Initial State Format
+
+The `initialState` property accepts two formats:
+
+### Object Format (Recommended)
+
+```json
+{
+  "initialState": {
+    "count": 0,
+    "user": {
+      "name": "John",
+      "age": 30
+    }
+  }
+}
+```
+
+### String Format
+
+You can also provide initial state as a JSON string:
+
+```json
+{
+  "initialState": "{\"count\": 0, \"user\": {\"name\": \"John\", \"age\": 30}}"
+}
+```
+
+The CLI automatically parses string format into an object when loading the configuration.
+
+## Usage Workflow
+
+1. **Create the config file**: Add `zustand-store-config.json` to your project root
+2. **Run the CLI**: Execute the create-zustand-store command
+3. **See defaults loaded**: The CLI displays "✔ Loaded default configuration" in green
+4. **Override as needed**: You can still modify values during the interactive prompts
+
+## Saving Configuration
+
+You don't have to manually create the configuration file. During the CLI prompts, you'll be asked:
+
+```
+➤ Do you want to save these settings as default?
+```
+
+If you answer "yes", the CLI will automatically create or update the `zustand-store-config.json` file with your current selections.
+
+## Error Handling
+
+If the CLI encounters an error loading your configuration file (for example, invalid JSON), it will:
+
+1. Display an error message: "✘ Failed to load default configuration"
+2. Show the specific error details
+3. Continue with built-in defaults instead
+
+This ensures the CLI remains functional even if your config file has issues.
+
+## Best Practices
+
+- **Commit to version control**: Share consistent defaults across your team
+- **Use TypeScript by default**: Set `"fileType": "TypeScript"` for better type safety
+- **Organize stores**: Use a descriptive `storePath` like `"src/stores"` or `"app/state"`
+- **Team conventions**: Align package manager choice with your team's standard

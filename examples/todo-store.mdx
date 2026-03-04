@@ -1,0 +1,578 @@
+---
+title: Todo Store Example
+description: Learn how to create a todo list store with array manipulation patterns using Create Zustand CLI
+---
+
+This example demonstrates how to create a todo list store using the Create Zustand CLI. You'll see how to manage arrays of items with add, update, delete, and filter operations.
+
+## CLI Interaction
+
+When you run `create-zustand-store`, configure it for a todo list store:
+
+```bash
+$ create-zustand-store
+
+      ╔════════════════════════════════════════╗
+      ║                                        ║
+      ║        Zustand Store CLI Tool          ║
+      ║    Easily create and manage stores     ║
+      ║                                        ║
+      ╚════════════════════════════════════════╝
+
+➤ What is the name of your store? useTodoStore
+➤ Choose the file type: TypeScript
+➤ Do you want to add persistence? Yes
+➤ Define initial state properties (as JSON): {"todos":[],"filter":"all"}
+➤ Define actions (comma-separated): addTodo,toggleTodo,deleteTodo,updateTodo,setFilter
+➤ Choose your package manager: npm
+➤ Enter the custom path for the store directory: store
+➤ Do you want to save these settings as default? No
+
+✔ Zustand store "useTodoStore" created successfully in the "store" directory.
+```
+
+## Generated Store Code
+
+The CLI generates a store with persistence middleware:
+
+<Tabs>
+  <Tab title="TypeScript">
+    ```typescript store/useTodoStore.ts
+    import { create } from "zustand";
+    import { persist } from "zustand/middleware";
+
+    interface State {
+      todos: any[];
+      filter: string;
+      actions: {
+        addTodo: () => void;
+        toggleTodo: () => void;
+        deleteTodo: () => void;
+        updateTodo: () => void;
+        setFilter: () => void;
+      };
+    }
+
+    const useTodoStore = create(
+      persist<State>(
+        (set) => ({
+          todos: [],
+          filter: "all",
+          actions: {
+            addTodo: () => set((state) => ({})),
+            toggleTodo: () => set((state) => ({})),
+            deleteTodo: () => set((state) => ({})),
+            updateTodo: () => set((state) => ({})),
+            setFilter: () => set((state) => ({})),
+          },
+        }),
+        {
+          name: "useTodoStore",
+        }
+      )
+    );
+
+    export default useTodoStore;
+    ```
+  </Tab>
+  <Tab title="JavaScript">
+    ```javascript store/useTodoStore.js
+    import { create } from "zustand";
+    import { persist } from "zustand/middleware";
+
+    const useTodoStore = create(
+      persist(
+        (set) => ({
+          todos: [],
+          filter: "all",
+          actions: {
+            addTodo: () => set((state) => ({})),
+            toggleTodo: () => set((state) => ({})),
+            deleteTodo: () => set((state) => ({})),
+            updateTodo: () => set((state) => ({})),
+            setFilter: () => set((state) => ({})),
+          },
+        }),
+        {
+          name: "useTodoStore",
+        }
+      )
+    );
+
+    export default useTodoStore;
+    ```
+  </Tab>
+</Tabs>
+
+## Customizing Actions
+
+After generating the store, implement the todo management logic with proper array manipulation:
+
+<Tabs>
+  <Tab title="TypeScript">
+    ```typescript store/useTodoStore.ts
+    import { create } from "zustand";
+    import { persist } from "zustand/middleware";
+
+    interface Todo {
+      id: string;
+      text: string;
+      completed: boolean;
+      createdAt: number;
+    }
+
+    type Filter = 'all' | 'active' | 'completed';
+
+    interface State {
+      todos: Todo[];
+      filter: Filter;
+      actions: {
+        addTodo: (text: string) => void;
+        toggleTodo: (id: string) => void;
+        deleteTodo: (id: string) => void;
+        updateTodo: (id: string, text: string) => void;
+        setFilter: (filter: Filter) => void;
+      };
+    }
+
+    const useTodoStore = create(
+      persist<State>(
+        (set) => ({
+          todos: [],
+          filter: 'all',
+          actions: {
+            addTodo: (text) => {
+              const newTodo: Todo = {
+                id: crypto.randomUUID(),
+                text,
+                completed: false,
+                createdAt: Date.now(),
+              };
+              set((state) => ({ todos: [...state.todos, newTodo] }));
+            },
+            toggleTodo: (id) => {
+              set((state) => ({
+                todos: state.todos.map((todo) =>
+                  todo.id === id ? { ...todo, completed: !todo.completed } : todo
+                ),
+              }));
+            },
+            deleteTodo: (id) => {
+              set((state) => ({
+                todos: state.todos.filter((todo) => todo.id !== id),
+              }));
+            },
+            updateTodo: (id, text) => {
+              set((state) => ({
+                todos: state.todos.map((todo) =>
+                  todo.id === id ? { ...todo, text } : todo
+                ),
+              }));
+            },
+            setFilter: (filter) => {
+              set({ filter });
+            },
+          },
+        }),
+        {
+          name: "todo-storage",
+        }
+      )
+    );
+
+    export default useTodoStore;
+    ```
+  </Tab>
+  <Tab title="JavaScript">
+    ```javascript store/useTodoStore.js
+    import { create } from "zustand";
+    import { persist } from "zustand/middleware";
+
+    const useTodoStore = create(
+      persist(
+        (set) => ({
+          todos: [],
+          filter: 'all',
+          actions: {
+            addTodo: (text) => {
+              const newTodo = {
+                id: crypto.randomUUID(),
+                text,
+                completed: false,
+                createdAt: Date.now(),
+              };
+              set((state) => ({ todos: [...state.todos, newTodo] }));
+            },
+            toggleTodo: (id) => {
+              set((state) => ({
+                todos: state.todos.map((todo) =>
+                  todo.id === id ? { ...todo, completed: !todo.completed } : todo
+                ),
+              }));
+            },
+            deleteTodo: (id) => {
+              set((state) => ({
+                todos: state.todos.filter((todo) => todo.id !== id),
+              }));
+            },
+            updateTodo: (id, text) => {
+              set((state) => ({
+                todos: state.todos.map((todo) =>
+                  todo.id === id ? { ...todo, text } : todo
+                ),
+              }));
+            },
+            setFilter: (filter) => {
+              set({ filter });
+            },
+          },
+        }),
+        {
+          name: "todo-storage",
+        }
+      )
+    );
+
+    export default useTodoStore;
+    ```
+  </Tab>
+</Tabs>
+
+## Using the Store in Components
+
+Here's how to use the todo store in your components with filtering and list operations:
+
+<Tabs>
+  <Tab title="TypeScript">
+    ```tsx TodoList.tsx
+    import { useMemo } from 'react';
+    import useTodoStore from './store/useTodoStore';
+
+    function TodoList() {
+      const todos = useTodoStore((state) => state.todos);
+      const filter = useTodoStore((state) => state.filter);
+      const { toggleTodo, deleteTodo } = useTodoStore(
+        (state) => state.actions
+      );
+
+      // Filter todos based on current filter
+      const filteredTodos = useMemo(() => {
+        switch (filter) {
+          case 'active':
+            return todos.filter((todo) => !todo.completed);
+          case 'completed':
+            return todos.filter((todo) => todo.completed);
+          default:
+            return todos;
+        }
+      }, [todos, filter]);
+
+      return (
+        <ul>
+          {filteredTodos.map((todo) => (
+            <li key={todo.id}>
+              <input
+                type="checkbox"
+                checked={todo.completed}
+                onChange={() => toggleTodo(todo.id)}
+              />
+              <span
+                style={{
+                  textDecoration: todo.completed ? 'line-through' : 'none',
+                }}
+              >
+                {todo.text}
+              </span>
+              <button onClick={() => deleteTodo(todo.id)}>Delete</button>
+            </li>
+          ))}
+        </ul>
+      );
+    }
+
+    export default TodoList;
+    ```
+
+    ```tsx AddTodo.tsx
+    import { useState } from 'react';
+    import useTodoStore from './store/useTodoStore';
+
+    function AddTodo() {
+      const [text, setText] = useState('');
+      const { addTodo } = useTodoStore((state) => state.actions);
+
+      const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (text.trim()) {
+          addTodo(text.trim());
+          setText('');
+        }
+      };
+
+      return (
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="What needs to be done?"
+          />
+          <button type="submit">Add Todo</button>
+        </form>
+      );
+    }
+
+    export default AddTodo;
+    ```
+
+    ```tsx TodoFilters.tsx
+    import useTodoStore from './store/useTodoStore';
+
+    function TodoFilters() {
+      const filter = useTodoStore((state) => state.filter);
+      const { setFilter } = useTodoStore((state) => state.actions);
+
+      return (
+        <div>
+          <button
+            onClick={() => setFilter('all')}
+            disabled={filter === 'all'}
+          >
+            All
+          </button>
+          <button
+            onClick={() => setFilter('active')}
+            disabled={filter === 'active'}
+          >
+            Active
+          </button>
+          <button
+            onClick={() => setFilter('completed')}
+            disabled={filter === 'completed'}
+          >
+            Completed
+          </button>
+        </div>
+      );
+    }
+
+    export default TodoFilters;
+    ```
+  </Tab>
+  <Tab title="JavaScript">
+    ```jsx TodoList.jsx
+    import { useMemo } from 'react';
+    import useTodoStore from './store/useTodoStore';
+
+    function TodoList() {
+      const todos = useTodoStore((state) => state.todos);
+      const filter = useTodoStore((state) => state.filter);
+      const { toggleTodo, deleteTodo } = useTodoStore(
+        (state) => state.actions
+      );
+
+      // Filter todos based on current filter
+      const filteredTodos = useMemo(() => {
+        switch (filter) {
+          case 'active':
+            return todos.filter((todo) => !todo.completed);
+          case 'completed':
+            return todos.filter((todo) => todo.completed);
+          default:
+            return todos;
+        }
+      }, [todos, filter]);
+
+      return (
+        <ul>
+          {filteredTodos.map((todo) => (
+            <li key={todo.id}>
+              <input
+                type="checkbox"
+                checked={todo.completed}
+                onChange={() => toggleTodo(todo.id)}
+              />
+              <span
+                style={{
+                  textDecoration: todo.completed ? 'line-through' : 'none',
+                }}
+              >
+                {todo.text}
+              </span>
+              <button onClick={() => deleteTodo(todo.id)}>Delete</button>
+            </li>
+          ))}
+        </ul>
+      );
+    }
+
+    export default TodoList;
+    ```
+
+    ```jsx AddTodo.jsx
+    import { useState } from 'react';
+    import useTodoStore from './store/useTodoStore';
+
+    function AddTodo() {
+      const [text, setText] = useState('');
+      const { addTodo } = useTodoStore((state) => state.actions);
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        if (text.trim()) {
+          addTodo(text.trim());
+          setText('');
+        }
+      };
+
+      return (
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="What needs to be done?"
+          />
+          <button type="submit">Add Todo</button>
+        </form>
+      );
+    }
+
+    export default AddTodo;
+    ```
+
+    ```jsx TodoFilters.jsx
+    import useTodoStore from './store/useTodoStore';
+
+    function TodoFilters() {
+      const filter = useTodoStore((state) => state.filter);
+      const { setFilter } = useTodoStore((state) => state.actions);
+
+      return (
+        <div>
+          <button
+            onClick={() => setFilter('all')}
+            disabled={filter === 'all'}
+          >
+            All
+          </button>
+          <button
+            onClick={() => setFilter('active')}
+            disabled={filter === 'active'}
+          >
+            Active
+          </button>
+          <button
+            onClick={() => setFilter('completed')}
+            disabled={filter === 'completed'}
+          >
+            Completed
+          </button>
+        </div>
+      );
+    }
+
+    export default TodoFilters;
+    ```
+  </Tab>
+</Tabs>
+
+## Complete Todo App
+
+Here's how to combine all the components into a complete todo application:
+
+<Tabs>
+  <Tab title="TypeScript">
+    ```tsx TodoApp.tsx
+    import AddTodo from './AddTodo';
+    import TodoList from './TodoList';
+    import TodoFilters from './TodoFilters';
+    import useTodoStore from './store/useTodoStore';
+
+    function TodoApp() {
+      const todos = useTodoStore((state) => state.todos);
+      const activeTodos = todos.filter((todo) => !todo.completed);
+
+      return (
+        <div>
+          <h1>Todo List</h1>
+          <AddTodo />
+          <TodoFilters />
+          <TodoList />
+          <p>{activeTodos.length} items left</p>
+        </div>
+      );
+    }
+
+    export default TodoApp;
+    ```
+  </Tab>
+  <Tab title="JavaScript">
+    ```jsx TodoApp.jsx
+    import AddTodo from './AddTodo';
+    import TodoList from './TodoList';
+    import TodoFilters from './TodoFilters';
+    import useTodoStore from './store/useTodoStore';
+
+    function TodoApp() {
+      const todos = useTodoStore((state) => state.todos);
+      const activeTodos = todos.filter((todo) => !todo.completed);
+
+      return (
+        <div>
+          <h1>Todo List</h1>
+          <AddTodo />
+          <TodoFilters />
+          <TodoList />
+          <p>{activeTodos.length} items left</p>
+        </div>
+      );
+    }
+
+    export default TodoApp;
+    ```
+  </Tab>
+</Tabs>
+
+## Array Manipulation Patterns
+
+This todo store demonstrates several important array manipulation patterns:
+
+### Adding Items
+```typescript
+set((state) => ({ todos: [...state.todos, newTodo] }))
+```
+
+### Updating Items
+```typescript
+set((state) => ({
+  todos: state.todos.map((todo) =>
+    todo.id === id ? { ...todo, completed: !todo.completed } : todo
+  ),
+}))
+```
+
+### Deleting Items
+```typescript
+set((state) => ({
+  todos: state.todos.filter((todo) => todo.id !== id),
+}))
+```
+
+These patterns ensure immutability, which is crucial for Zustand to properly detect state changes and trigger re-renders.
+
+## Persistence Benefits
+
+With persistence enabled, your todo list will:
+- Survive page refreshes
+- Persist across browser sessions
+- Sync filter state automatically
+- Save all todos to localStorage
+
+The data is stored under the key `todo-storage` in localStorage.
+
+## Next Steps
+
+- Learn about [counter stores](/examples/counter-store) for simpler state management
+- Explore [user stores](/examples/user-store) for authentication patterns
+- Check out the [Configuration Guide](/configuration) for advanced CLI options

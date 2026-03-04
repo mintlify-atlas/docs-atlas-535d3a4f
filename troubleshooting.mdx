@@ -1,0 +1,273 @@
+---
+title: Troubleshooting
+description: Common issues and solutions when using Create Zustand CLI
+---
+
+## Common Issues
+
+This guide covers common problems you might encounter when using the Create Zustand CLI and how to resolve them.
+
+### npm link Issues
+
+#### Command Not Found After npm link
+
+If you run `npm link` but the `create-zustand-store` command is not recognized:
+
+<Warning>
+Make sure you run `npm link` from within the `zustand-store-cli` directory, not from your project directory.
+</Warning>
+
+**Solution:**
+
+```bash
+cd zustand-store-cli
+npm link
+```
+
+If the issue persists, check your global npm bin directory:
+
+```bash
+npm config get prefix
+```
+
+Ensure this directory is in your system's PATH. On Unix systems, you can add it to your `.bashrc` or `.zshrc`:
+
+```bash
+export PATH="$PATH:$(npm config get prefix)/bin"
+```
+
+#### npm link Fails with Symlink Error
+
+On some systems, npm link may fail due to symlink permission issues.
+
+**Solution:**
+
+1. Try running with sudo (Linux/macOS):
+   ```bash
+   sudo npm link
+   ```
+
+2. Or change npm's default directory (preferred):
+   ```bash
+   mkdir ~/.npm-global
+   npm config set prefix '~/.npm-global'
+   export PATH=~/.npm-global/bin:$PATH
+   ```
+
+### Permission Errors
+
+#### EACCES: permission denied
+
+You may encounter permission errors when installing global packages or running npm link.
+
+<Note>
+Never use sudo with npm unless absolutely necessary. Instead, configure npm to use a directory you own.
+</Note>
+
+**Solution:**
+
+1. Create a directory for global installations:
+   ```bash
+   mkdir ~/.npm-global
+   npm config set prefix '~/.npm-global'
+   ```
+
+2. Add the directory to your PATH in `~/.bashrc` or `~/.zshrc`:
+   ```bash
+   export PATH=~/.npm-global/bin:$PATH
+   ```
+
+3. Reload your shell configuration:
+   ```bash
+   source ~/.bashrc  # or source ~/.zshrc
+   ```
+
+#### Cannot Write to Store Directory
+
+If you get a permission error when the CLI tries to create the store directory:
+
+**Solution:**
+
+1. Check the permissions of your project directory:
+   ```bash
+   ls -la
+   ```
+
+2. Ensure you own the directory:
+   ```bash
+   sudo chown -R $USER:$USER .
+   ```
+
+### Missing Dependencies
+
+#### Module Not Found Errors
+
+If you see errors like `Cannot find module 'commander'` or similar:
+
+<Tip>
+Always run `npm install` after cloning the repository to install all required dependencies.
+</Tip>
+
+**Solution:**
+
+```bash
+cd zustand-store-cli
+npm install
+```
+
+Required dependencies:
+- `chalk` (^5.3.0)
+- `commander` (^8.0.0)
+- `fs-extra` (^10.0.0)
+- `inquirer` (^8.0.0)
+- `zustand` (^4.5.2)
+
+#### Zustand Not Installed in Project
+
+The CLI attempts to auto-install Zustand, but this may fail if:
+
+**Solution:**
+
+1. Ensure your project has a `package.json`:
+   ```bash
+   npm init -y
+   ```
+
+2. Manually install Zustand:
+   ```bash
+   npm install zustand
+   # or
+   yarn add zustand
+   ```
+
+### Configuration Issues
+
+#### Invalid JSON in Initial State
+
+If you provide invalid JSON for the initial state, the CLI will exit with an error.
+
+**Solution:**
+
+Ensure your initial state is valid JSON:
+
+```json
+{"count": 0}
+```
+
+```json
+{"user": {"name": "John", "age": 30}}
+```
+
+<Warning>
+Don't forget quotes around property names and string values!
+</Warning>
+
+#### Configuration File Not Loading
+
+If your saved configuration in `zustand-store-config.json` is not being loaded:
+
+**Solution:**
+
+1. Check that the file exists in your current working directory:
+   ```bash
+   ls -la zustand-store-config.json
+   ```
+
+2. Verify the JSON is valid:
+   ```bash
+   cat zustand-store-config.json
+   ```
+
+3. If corrupted, delete and recreate:
+   ```bash
+   rm zustand-store-config.json
+   create-zustand-store
+   ```
+
+### Template Issues
+
+#### Template File Not Found
+
+If you see `Template file not found` error:
+
+**Solution:**
+
+Ensure the templates directory exists with all required files:
+
+```bash
+cd zustand-store-cli
+ls templates/
+```
+
+You should see:
+- `store.js`
+- `store.ts`
+- `store-persist.js`
+- `store-persist.ts`
+
+If missing, re-clone the repository.
+
+### TypeScript Issues
+
+#### Type Errors in Generated Store
+
+If you encounter TypeScript errors in the generated store file:
+
+<Tip>
+The CLI generates basic type inference. For complex objects, you may need to manually refine the types.
+</Tip>
+
+**Solution:**
+
+1. Check that TypeScript is installed in your project:
+   ```bash
+   npm install -D typescript @types/node
+   ```
+
+2. Manually update the generated types in your store file if needed
+
+### Runtime Errors
+
+#### Store Not Persisting Data
+
+If you enabled persistence but data isn't being saved:
+
+**Solution:**
+
+1. Verify you're in a browser environment (persistence uses localStorage)
+2. Check browser console for storage errors
+3. Ensure your store name is unique
+4. Clear localStorage and test again:
+   ```javascript
+   localStorage.clear();
+   ```
+
+#### Actions Not Updating State
+
+If your actions aren't working as expected:
+
+<Note>
+The CLI generates empty action implementations. You need to add your own logic inside each action.
+</Note>
+
+**Solution:**
+
+Edit the generated store file and implement your action logic:
+
+```typescript
+actions: {
+  increment: () => set((state) => ({ count: state.count + 1 })),
+  reset: () => set({ count: 0 }),
+}
+```
+
+### Getting Help
+
+If you're still experiencing issues:
+
+1. Check the [GitHub repository](https://github.com/abubakardev0/zustand-store-cli) for known issues
+2. Review the [FAQ](/faq) for common questions
+3. Open an issue with:
+   - Your environment (OS, Node version, npm version)
+   - Complete error message
+   - Steps to reproduce

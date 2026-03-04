@@ -1,0 +1,101 @@
+---
+title: Introduction
+description: Learn about the Create Zustand CLI tool and how it helps you quickly scaffold Zustand stores
+---
+
+The Create Zustand CLI is a command-line tool that helps you easily create and manage Zustand stores in your JavaScript or TypeScript projects. Instead of manually writing boilerplate code for every new store, you can use this interactive CLI to generate fully-configured stores in seconds.
+
+## What is Create Zustand CLI?
+
+Create Zustand CLI is an interactive command-line tool that scaffolds Zustand stores based on your specifications. You answer a series of prompts about your store requirements, and the CLI generates a ready-to-use store file with all the necessary configuration.
+
+## Key benefits
+
+### Save time and effort
+
+No more copying and pasting boilerplate code or manually setting up store structure. The CLI generates everything you need in seconds.
+
+### Supports multiple configurations
+
+Choose between JavaScript or TypeScript, add persistence with Zustand middleware, define initial state with nested objects, and configure custom actions—all through simple prompts.
+
+### Consistent store structure
+
+Ensure all your Zustand stores follow the same pattern and best practices across your project.
+
+### Save default configurations
+
+You can save your preferred settings as defaults to speed up future store creation even more.
+
+## Features
+
+- **Interactive prompts** - Answer questions about your store and let the CLI handle the rest
+- **TypeScript support** - Generate fully-typed stores with proper interfaces
+- **Persistence middleware** - Optionally add state persistence to localStorage
+- **Custom initial state** - Define complex initial state with nested objects using JSON
+- **Action generation** - Specify actions to include in your store
+- **Package manager choice** - Works with both npm and yarn
+- **Custom paths** - Define where your store files should be created
+- **Configuration saving** - Save your preferences for faster store creation
+
+<Note>
+The CLI automatically installs Zustand if it's not already in your project dependencies.
+</Note>
+
+## What you'll create
+
+Depending on your choices, the CLI generates different store templates:
+
+**Basic JavaScript store:**
+```javascript
+import { create } from "zustand";
+
+const useStore = create((set) => ({
+  count: 0,
+  actions: {
+    increment: () => set((state) => ({})),
+  },
+}));
+
+export default useStore;
+```
+
+**TypeScript store with persistence:**
+```typescript
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+
+interface State {
+  count: number;
+  actions: {
+    increment: () => void;
+  };
+}
+
+const useStore = create(
+  persist<State>(
+    (set) => ({
+      count: 0,
+      actions: {
+        increment: () => set((state) => ({})),
+      },
+    }),
+    {
+      name: "useStore",
+    }
+  )
+);
+
+export default useStore;
+```
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/installation">
+    Install the CLI tool on your machine
+  </Card>
+  <Card title="Quick start" icon="rocket" href="/quickstart">
+    Create your first store in minutes
+  </Card>
+</CardGroup>

@@ -1,0 +1,388 @@
+---
+title: Defining Initial State and Actions
+description: Master the patterns for setting up initial state and implementing actions in your Zustand stores
+---
+
+Learn how to effectively define initial state and create actions that modify state in your Zustand stores.
+
+## Understanding State Structure
+
+Create Zustand CLI uses a specific pattern for organizing stores:
+
+```javascript
+const useStore = create((set) => ({
+  // Initial state properties
+  count: 0,
+  user: null,
+  isLoading: false,
+  
+  // Actions grouped in an object
+  actions: {
+    increment: () => set((state) => ({ count: state.count + 1 })),
+    setUser: (user) => set({ user }),
+    setLoading: (loading) => set({ isLoading: loading }),
+  },
+}));
+```
+
+This pattern separates state from actions, making your store more organized and easier to understand.
+
+## Defining Initial State
+
+<Steps>
+
+### Simple State Values
+
+When running the CLI, define simple state as JSON:
+
+```bash
+➤ Define initial state properties (as JSON):
+{"count": 0, "message": "Hello", "isActive": true}
+```
+
+This generates:
+
+```javascript
+const useStore = create((set) => ({
+  count: 0,
+  message: "Hello",
+  isActive: true,
+  actions: { /* ... */ },
+}));
+```
+
+### Nested Objects
+
+Define nested state for complex data:
+
+```bash
+➤ Define initial state properties (as JSON):
+{"user": {"name": "John", "age": 30}, "settings": {"theme": "dark", "notifications": true}}
+```
+
+This generates:
+
+```javascript
+const useStore = create((set) => ({
+  user: {
+    name: "John",
+    age: 30
+  },
+  settings: {
+    theme: "dark",
+    notifications: true
+  },
+  actions: { /* ... */ },
+}));
+```
+
+### Arrays
+
+Initialize state with arrays:
+
+```bash
+➤ Define initial state properties (as JSON):
+{"items": [], "tags": ["javascript", "react"]}
+```
+
+This generates:
+
+```javascript
+const useStore = create((set) => ({
+  items: [],
+  tags: ["javascript", "react"],
+  actions: { /* ... */ },
+}));
+```
+
+</Steps>
+
+## Implementing Actions
+
+The CLI generates action stubs that you need to implement:
+
+### Generated Action Stub
+
+When you specify actions during CLI setup:
+
+```bash
+➤ Define actions (comma-separated):
+increment,decrement,reset
+```
+
+The CLI generates:
+
+```javascript
+actions: {
+  increment: () => set((state) => ({})),
+  decrement: () => set((state) => ({})),
+  reset: () => set((state) => ({}))
+}
+```
+
+<Note>
+The generated actions are empty stubs. You must implement the actual logic.
+</Note>
+
+### Simple State Updates
+
+Implement actions that update a single value:
+
+```javascript
+actions: {
+  // Direct state update
+  reset: () => set({ count: 0 }),
+  
+  // Update based on previous state
+  increment: () => set((state) => ({ count: state.count + 1 })),
+  
+  // Update with parameter
+  setCount: (value) => set({ count: value }),
+}
+```
+
+### Complex State Updates
+
+Update nested objects or multiple properties:
+
+```javascript
+actions: {
+  updateUser: (name, age) => set((state) => ({
+    user: {
+      ...state.user,
+      name,
+      age,
+    }
+  })),
+  
+  updateSettings: (key, value) => set((state) => ({
+    settings: {
+      ...state.settings,
+      [key]: value,
+    }
+  })),
+}
+```
+
+### Array Operations
+
+Manipulate arrays in your state:
+
+```javascript
+actions: {
+  // Add item to array
+  addItem: (item) => set((state) => ({
+    items: [...state.items, item]
+  })),
+  
+  // Remove item from array
+  removeItem: (itemId) => set((state) => ({
+    items: state.items.filter(item => item.id !== itemId)
+  })),
+  
+  // Update item in array
+  updateItem: (itemId, updates) => set((state) => ({
+    items: state.items.map(item => 
+      item.id === itemId ? { ...item, ...updates } : item
+    )
+  })),
+  
+  // Clear array
+  clearItems: () => set({ items: [] }),
+}
+```
+
+## TypeScript Action Types
+
+When using TypeScript, define proper types for your actions:
+
+### Update Generated Types
+
+The CLI generates basic action types:
+
+```typescript
+interface State {
+  count: number;
+  user: { name: string; age: number } | null;
+  actions: {
+    increment: () => void;  // Generated
+    setUser: () => void;    // Generated
+  };
+}
+```
+
+Update with parameter types:
+
+```typescript
+interface User {
+  name: string;
+  age: number;
+}
+
+interface State {
+  count: number;
+  user: User | null;
+  actions: {
+    increment: () => void;
+    decrement: () => void;
+    setCount: (value: number) => void;
+    setUser: (user: User) => void;
+    updateUser: (updates: Partial<User>) => void;
+  };
+}
+```
+
+## Action Patterns
+
+### Async Actions
+
+Handle asynchronous operations:
+
+```javascript
+actions: {
+  fetchUser: async (userId) => {
+    set({ isLoading: true });
+    try {
+      const response = await fetch(`/api/users/${userId}`);
+      const user = await response.json();
+      set({ user, isLoading: false });
+    } catch (error) {
+      set({ error: error.message, isLoading: false });
+    }
+  },
+}
+```
+
+### Dependent Actions
+
+Actions that call other actions:
+
+```javascript
+const useStore = create((set, get) => ({
+  count: 0,
+  history: [],
+  actions: {
+    increment: () => {
+      set((state) => ({ count: state.count + 1 }));
+      get().actions.addToHistory('increment');
+    },
+    addToHistory: (action) => set((state) => ({
+      history: [...state.history, { action, timestamp: Date.now() }]
+    })),
+  },
+}));
+```
+
+### Reset Actions
+
+Reset state to initial values:
+
+```javascript
+const initialState = {
+  count: 0,
+  user: null,
+  isLoading: false,
+};
+
+const useStore = create((set) => ({
+  ...initialState,
+  actions: {
+    // ... other actions
+    reset: () => set(initialState),
+  },
+}));
+```
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Keep Actions Simple">
+    Each action should do one thing well. If an action is getting complex, split it into multiple actions.
+    
+    ```javascript
+    // Good
+    actions: {
+      setLoading: (loading) => set({ isLoading: loading }),
+      setError: (error) => set({ error }),
+      setData: (data) => set({ data }),
+    }
+    
+    // Avoid
+    actions: {
+      fetchData: async () => {
+        // Too much logic in one action
+      }
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Use Descriptive Names">
+    Action names should clearly describe what they do.
+    
+    ```javascript
+    // Good
+    actions: {
+      addItemToCart: (item) => { /* ... */ },
+      removeItemFromCart: (itemId) => { /* ... */ },
+      clearCart: () => { /* ... */ },
+    }
+    
+    // Avoid
+    actions: {
+      add: (item) => { /* ... */ },
+      remove: (id) => { /* ... */ },
+      clear: () => { /* ... */ },
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Avoid State Mutations">
+    Always return new objects/arrays instead of mutating existing state.
+    
+    ```javascript
+    // Good
+    addItem: (item) => set((state) => ({
+      items: [...state.items, item]
+    })),
+    
+    // Avoid
+    addItem: (item) => set((state) => {
+      state.items.push(item); // Mutation!
+      return { items: state.items };
+    }),
+    ```
+  </Accordion>
+  
+  <Accordion title="Group Related State">
+    Keep related state properties together in nested objects.
+    
+    ```javascript
+    // Good
+    {
+      user: {
+        profile: { name: "John", email: "john@example.com" },
+        preferences: { theme: "dark", language: "en" }
+      }
+    }
+    
+    // Avoid
+    {
+      userName: "John",
+      userEmail: "john@example.com",
+      userTheme: "dark",
+      userLanguage: "en"
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Basic Store" icon="play" href="/guides/basic-store">
+    Create your first store
+  </Card>
+  <Card title="TypeScript Store" icon="code" href="/guides/typescript-store">
+    Add type safety
+  </Card>
+</CardGroup>

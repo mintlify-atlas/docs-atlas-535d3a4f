@@ -1,0 +1,352 @@
+---
+title: Contributing
+description: How to contribute to the Create Zustand CLI project
+---
+
+## Welcome Contributors!
+
+Thank you for your interest in contributing to Create Zustand CLI! This guide will help you get started with contributing to the project.
+
+## Getting Started
+
+### Prerequisites
+
+Before you begin, ensure you have:
+
+- Node.js 14 or higher installed
+- npm or yarn package manager
+- Git installed and configured
+- A GitHub account
+
+### Setting Up Your Development Environment
+
+1. **Fork the repository** on GitHub by clicking the "Fork" button
+
+2. **Clone your fork** locally:
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/zustand-store-cli.git
+   cd zustand-store-cli
+   ```
+
+3. **Add the upstream remote** to stay updated with the main repository:
+   ```bash
+   git remote add upstream https://github.com/abubakardev0/zustand-store-cli.git
+   ```
+
+4. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+5. **Link the CLI locally** for testing:
+   ```bash
+   npm link
+   ```
+
+<Tip>
+Now you can test your changes by running `create-zustand-store` from any directory!
+</Tip>
+
+## Making Changes
+
+### Creating a Branch
+
+Always create a new branch for your changes:
+
+```bash
+git checkout -b feature/your-feature-name
+# or
+git checkout -b fix/your-bug-fix
+```
+
+Use descriptive branch names:
+- `feature/add-config-validation`
+- `fix/template-path-resolution`
+- `docs/update-readme`
+- `refactor/improve-error-handling`
+
+### Code Standards
+
+Follow these coding standards to maintain consistency:
+
+#### JavaScript/Node.js Style
+
+- Use ES6+ features and syntax
+- Use meaningful variable and function names
+- Keep functions small and focused on a single responsibility
+- Use async/await instead of callbacks when possible
+- Add comments for complex logic
+
+#### Formatting
+
+- Use 2 spaces for indentation
+- Use semicolons
+- Use double quotes for strings
+- Keep lines under 80 characters when reasonable
+
+<Note>
+Consider setting up Prettier for automatic formatting:
+
+```bash
+npm install -D prettier
+```
+</Note>
+
+#### File Organization
+
+- Main CLI logic: `bin/create-zustand-store.mjs`
+- Templates: `templates/` directory
+- Keep templates simple and focused
+- Use clear placeholder naming (e.g., `__STORE_NAME__`)
+
+### Testing Your Changes
+
+<Warning>
+Always test your changes before submitting a pull request!
+</Warning>
+
+1. **Test the CLI interactively**:
+   ```bash
+   create-zustand-store
+   ```
+
+2. **Test different configurations**:
+   - JavaScript and TypeScript
+   - With and without persistence
+   - Different initial states (simple, nested, arrays)
+   - Various action configurations
+   - Custom store paths
+
+3. **Test edge cases**:
+   - Invalid JSON input
+   - Empty inputs
+   - Special characters in names
+   - Very long inputs
+
+4. **Verify the generated files**:
+   - Check syntax correctness
+   - Test in a real React project
+   - Verify TypeScript types compile without errors
+
+### Writing Commit Messages
+
+Write clear, descriptive commit messages:
+
+```bash
+# Good examples
+git commit -m "Add validation for JSON initial state"
+git commit -m "Fix template path resolution on Windows"
+git commit -m "Update README with installation instructions"
+
+# Bad examples
+git commit -m "fix bug"  # Too vague
+git commit -m "WIP"  # Not descriptive
+```
+
+**Format:**
+- Start with a verb (Add, Fix, Update, Remove, Refactor)
+- Use present tense
+- Keep the first line under 50 characters
+- Add detailed description after a blank line if needed
+
+## Submitting Your Contribution
+
+### Before Submitting
+
+<Tip>
+Use this checklist before submitting your pull request:
+</Tip>
+
+- [ ] Code follows the project's style guidelines
+- [ ] All changes have been tested thoroughly
+- [ ] No unnecessary files are included (node_modules, .env, etc.)
+- [ ] Commit messages are clear and descriptive
+- [ ] Documentation is updated if needed
+- [ ] No console.log statements left in code (unless intentional)
+
+### Creating a Pull Request
+
+1. **Push your changes** to your fork:
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+
+2. **Go to GitHub** and navigate to your fork
+
+3. **Click "Pull Request"** button
+
+4. **Write a clear PR description** including:
+   - What changes you made
+   - Why you made these changes
+   - How to test the changes
+   - Screenshots (if applicable)
+   - Related issues (if any)
+
+**Example PR description:**
+
+```markdown
+## Description
+Added validation for JSON input to prevent runtime errors when users 
+enter invalid JSON for the initial state.
+
+## Changes
+- Added try-catch block for JSON.parse()
+- Display user-friendly error message
+- Exit gracefully on invalid input
+
+## Testing
+1. Run the CLI
+2. Enter invalid JSON like `{count: 0}` (missing quotes)
+3. Verify error message is displayed
+4. Verify process exits without crash
+
+## Related Issues
+Closes #123
+```
+
+### Pull Request Review Process
+
+After submitting:
+
+1. Maintainers will review your PR
+2. You may receive feedback or change requests
+3. Make requested changes and push to the same branch
+4. Once approved, your PR will be merged
+
+<Note>
+Be patient! Reviews may take time. Maintainers are often volunteers.
+</Note>
+
+## Types of Contributions
+
+You can contribute in many ways:
+
+### Code Contributions
+
+- **New features**: Add new CLI options or functionality
+- **Bug fixes**: Fix issues reported in GitHub Issues
+- **Performance improvements**: Optimize existing code
+- **Refactoring**: Improve code structure and readability
+
+### Documentation
+
+- Improve README clarity
+- Add usage examples
+- Fix typos and grammar
+- Create tutorials or guides
+- Add code comments
+
+### Testing
+
+- Test on different operating systems
+- Report bugs with detailed reproduction steps
+- Test edge cases
+- Verify fixes for reported issues
+
+### Templates
+
+- Improve existing templates
+- Add new template variations
+- Optimize generated code quality
+- Improve TypeScript type inference
+
+## Reporting Issues
+
+Found a bug? Have a feature request?
+
+### Bug Reports
+
+Include:
+
+- **Description**: Clear summary of the issue
+- **Steps to reproduce**: Exact steps to trigger the bug
+- **Expected behavior**: What should happen
+- **Actual behavior**: What actually happens
+- **Environment**:
+  - OS (Windows, macOS, Linux)
+  - Node.js version
+  - npm/yarn version
+- **Error messages**: Full error output
+- **Screenshots**: If applicable
+
+### Feature Requests
+
+Include:
+
+- **Description**: What feature you'd like to see
+- **Use case**: Why this feature would be useful
+- **Examples**: How it would work
+- **Alternatives**: Other solutions you've considered
+
+## Code of Conduct
+
+### Our Standards
+
+- Be respectful and inclusive
+- Welcome newcomers
+- Accept constructive criticism
+- Focus on what's best for the project
+- Show empathy towards others
+
+### Unacceptable Behavior
+
+- Harassment or discrimination
+- Trolling or insulting comments
+- Personal or political attacks
+- Publishing others' private information
+- Other unprofessional conduct
+
+## Development Tips
+
+### Debugging
+
+Add console.log statements during development:
+
+```javascript
+console.log(chalk.yellow('[DEBUG]'), 'Variable value:', myVariable);
+```
+
+<Warning>
+Remember to remove debug statements before committing!
+</Warning>
+
+### Testing Locally
+
+Create a test project in a separate directory:
+
+```bash
+mkdir ~/test-cli-project
+cd ~/test-cli-project
+npm init -y
+create-zustand-store
+```
+
+### Keeping Your Fork Updated
+
+Regularly sync with the upstream repository:
+
+```bash
+git checkout main
+git fetch upstream
+git merge upstream/main
+git push origin main
+```
+
+## Getting Help
+
+Need help contributing?
+
+- Check existing issues and pull requests
+- Ask questions in GitHub Discussions (if available)
+- Open an issue with the "question" label
+- Reach out to maintainers
+
+## Recognition
+
+All contributors will be recognized in:
+
+- GitHub contributors page
+- Project README (for significant contributions)
+- Release notes
+
+Thank you for making Create Zustand CLI better for everyone!

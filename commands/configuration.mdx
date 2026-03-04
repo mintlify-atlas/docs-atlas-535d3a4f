@@ -1,0 +1,184 @@
+---
+title: 'Configuration'
+description: 'Configure default settings for create-zustand-store'
+---
+
+## Configuration File
+
+The `create-zustand-store` CLI supports saving your preferences to a configuration file. This allows you to set default values for all options, making it faster to create new stores with consistent settings.
+
+## File Location
+
+The configuration file is stored at the root of your project:
+
+```
+zustand-store-config.json
+```
+
+## Creating a Configuration
+
+You can create a configuration file in two ways:
+
+### 1. Via Interactive Prompt
+
+When running the CLI, answer "Yes" to the final prompt:
+
+```bash
+? Do you want to save these settings as default? Yes
+✔ Configuration saved to zustand-store-config.json
+```
+
+### 2. Manual Creation
+
+Create a `zustand-store-config.json` file in your project root:
+
+```json
+{
+  "storeName": "useStore",
+  "fileType": "TypeScript",
+  "addPersist": false,
+  "initialState": {},
+  "actions": "",
+  "packageManager": "npm",
+  "storePath": "store"
+}
+```
+
+## Configuration Schema
+
+All fields in the configuration file are optional. If a field is missing, the CLI will use its built-in default value.
+
+<ParamField path="storeName" type="string" default="useStore">
+  Default name for new stores.
+</ParamField>
+
+<ParamField path="fileType" type="string" default="JavaScript">
+  Default file type. Must be either `"JavaScript"` or `"TypeScript"`.
+</ParamField>
+
+<ParamField path="addPersist" type="boolean" default="false">
+  Whether to add persistence by default.
+</ParamField>
+
+<ParamField path="initialState" type="object" default="{}">
+  Default initial state as a JSON object.
+  
+  **Example:**
+  ```json
+  {
+    "initialState": {
+      "count": 0,
+      "user": null
+    }
+  }
+  ```
+</ParamField>
+
+<ParamField path="actions" type="string" default="">
+  Default actions as a comma-separated string.
+  
+  **Example:**
+  ```json
+  {
+    "actions": "increment,decrement,reset"
+  }
+  ```
+</ParamField>
+
+<ParamField path="packageManager" type="string" default="npm">
+  Default package manager. Must be either `"npm"` or `"yarn"`.
+</ParamField>
+
+<ParamField path="storePath" type="string" default="store">
+  Default directory path for store files.
+</ParamField>
+
+## Example Configurations
+
+### TypeScript Project with Persistence
+
+```json
+{
+  "storeName": "useStore",
+  "fileType": "TypeScript",
+  "addPersist": true,
+  "initialState": {},
+  "actions": "",
+  "packageManager": "yarn",
+  "storePath": "src/stores"
+}
+```
+
+### Counter Store Template
+
+```json
+{
+  "storeName": "useCounter",
+  "fileType": "TypeScript",
+  "addPersist": true,
+  "initialState": {
+    "count": 0
+  },
+  "actions": "increment,decrement,reset",
+  "packageManager": "npm",
+  "storePath": "src/store"
+}
+```
+
+### Authentication Store Template
+
+```json
+{
+  "storeName": "useAuth",
+  "fileType": "TypeScript",
+  "addPersist": true,
+  "initialState": {
+    "user": null,
+    "isAuthenticated": false,
+    "loading": false
+  },
+  "actions": "login,logout,setUser,setLoading",
+  "packageManager": "npm",
+  "storePath": "src/stores"
+}
+```
+
+## How Configuration Loading Works
+
+1. When you run `create-zustand-store`, the CLI checks for `zustand-store-config.json` in the current directory
+2. If found, the CLI loads the configuration and displays a success message:
+   ```
+   ✔ Loaded default configuration.
+   ```
+3. The loaded values are used as defaults in the interactive prompts
+4. You can override any default by simply changing the value in the prompt
+5. If you choose to save the configuration again, it will overwrite the existing file with your new values
+
+## Editing Configuration
+
+You can edit the configuration file at any time:
+
+1. Open `zustand-store-config.json` in your editor
+2. Modify the values you want to change
+3. Save the file
+4. Run `create-zustand-store` again to use the updated defaults
+
+## Removing Configuration
+
+To reset to the CLI's built-in defaults, simply delete the configuration file:
+
+```bash
+rm zustand-store-config.json
+```
+
+The next time you run the CLI, it will use the standard defaults.
+
+## Error Handling
+
+If the configuration file is invalid (e.g., malformed JSON), you'll see an error message:
+
+```
+✘ Failed to load default configuration: [error message]
+```
+
+The CLI will continue running with built-in defaults. Fix the JSON syntax and run the command again.

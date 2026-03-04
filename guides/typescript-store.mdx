@@ -1,0 +1,236 @@
+---
+title: Creating a TypeScript Store
+description: Build type-safe Zustand stores with TypeScript interfaces and proper typing
+---
+
+Create a fully typed Zustand store using TypeScript to get autocomplete, type checking, and better developer experience.
+
+## What You'll Build
+
+You'll create a type-safe user store that demonstrates:
+- Defining TypeScript interfaces for state
+- Typing actions with proper return types
+- Using the `create<State>` generic
+
+<Steps>
+
+### Run the CLI
+
+Start the Create Zustand CLI tool:
+
+```bash
+create-zustand-store
+```
+
+### Configure Your Store
+
+Answer the prompts to create a TypeScript store:
+
+<CodeGroup>
+
+```bash Store Name
+➤ What is the name of your store?
+useUserStore
+```
+
+```bash File Type
+➤ Choose the file type:
+TypeScript
+```
+
+```bash Persistence
+➤ Do you want to add persistence?
+No
+```
+
+```bash Initial State
+➤ Define initial state properties (as JSON):
+{"user": {"name": "John", "age": 30}, "isLoading": false}
+```
+
+```bash Actions
+➤ Define actions (comma-separated):
+setUser,clearUser,setLoading
+```
+
+</CodeGroup>
+
+### Review the Generated Store
+
+The CLI generates a TypeScript store with interface definitions:
+
+```typescript store/useUserStore.ts
+import { create } from "zustand";
+
+interface State {
+  user: {
+    name: string;
+    age: number
+  };
+  isLoading: boolean;
+  actions: {
+    setUser: () => void;
+    clearUser: () => void;
+    setLoading: () => void;
+  };
+}
+
+const useUserStore = create<State>((set) => ({
+  user: {
+    name: "John",
+    age: 30
+  },
+  isLoading: false,
+  actions: {
+    setUser: () => set((state) => ({})),
+    clearUser: () => set((state) => ({})),
+    setLoading: () => set((state) => ({}))
+  },
+}));
+
+export default useUserStore;
+```
+
+### Implement Typed Actions
+
+Update the actions with proper implementations and parameter types:
+
+```typescript store/useUserStore.ts
+import { create } from "zustand";
+
+interface User {
+  name: string;
+  age: number;
+}
+
+interface State {
+  user: User | null;
+  isLoading: boolean;
+  actions: {
+    setUser: (user: User) => void;
+    clearUser: () => void;
+    setLoading: (loading: boolean) => void;
+  };
+}
+
+const useUserStore = create<State>((set) => ({
+  user: null,
+  isLoading: false,
+  actions: {
+    setUser: (user) => set({ user }),
+    clearUser: () => set({ user: null }),
+    setLoading: (loading) => set({ isLoading: loading })
+  },
+}));
+
+export default useUserStore;
+```
+
+### Use Your Typed Store
+
+Benefit from full TypeScript autocomplete and type checking:
+
+```typescript components/UserProfile.tsx
+import useUserStore from '../store/useUserStore';
+
+function UserProfile() {
+  const user = useUserStore((state) => state.user);
+  const isLoading = useUserStore((state) => state.isLoading);
+  const { setUser, clearUser, setLoading } = useUserStore(
+    (state) => state.actions
+  );
+
+  const handleUpdate = () => {
+    setLoading(true);
+    // TypeScript knows the exact shape of user object
+    setUser({ name: "Jane", age: 25 });
+    setLoading(false);
+  };
+
+  if (isLoading) return <div>Loading...</div>;
+
+  return (
+    <div>
+      {user ? (
+        <>
+          <h2>{user.name}</h2>
+          <p>Age: {user.age}</p>
+          <button onClick={clearUser}>Clear</button>
+        </>
+      ) : (
+        <button onClick={handleUpdate}>Load User</button>
+      )}
+    </div>
+  );
+}
+
+export default UserProfile;
+```
+
+</Steps>
+
+## Understanding the TypeScript Template
+
+The CLI uses this template from `templates/store.ts`:
+
+```typescript
+import { create } from "zustand";
+
+interface State {
+  __INITIAL_STATE_TYPES__;
+  actions: {
+    __ACTIONS_TYPES__;
+  };
+}
+
+const use__STORE_NAME__ = create<State>((set) => ({
+  __INITIAL_STATE__,
+  actions: {
+    __ACTIONS__,
+  },
+}));
+
+export default use__STORE_NAME__;
+```
+
+The CLI automatically:
+- Generates types from your JSON initial state
+- Infers basic types: `number`, `boolean`, `string`, `object`, `any[]`
+- Creates action type signatures as `() => void` (you'll update these)
+
+## Type Inference
+
+The CLI's type generation (from `bin/create-zustand-store.mjs:269-296`):
+
+```javascript
+function inferType(value) {
+  if (Array.isArray(value)) {
+    return "any[]";
+  }
+  switch (typeof value) {
+    case "number":
+      return "number";
+    case "boolean":
+      return "boolean";
+    case "object":
+      return value === null ? "null" : "object";
+    default:
+      return "string";
+  }
+}
+```
+
+<Note>
+The CLI provides basic type inference. For complex types like arrays of specific objects or union types, you'll need to manually refine the generated interface.
+</Note>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Persistent Store" icon="database" href="/guides/persistent-store">
+    Add persistence with TypeScript
+  </Card>
+  <Card title="Actions & State" icon="bolt" href="/guides/actions-state">
+    Advanced action patterns
+  </Card>
+</CardGroup>
