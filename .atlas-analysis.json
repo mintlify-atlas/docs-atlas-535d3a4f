@@ -1,0 +1,83 @@
+{
+  "projectType": "cli-tool",
+  "projectName": "Create Zustand CLI",
+  "projectDescription": "Command-line tool to create and manage Zustand stores in React applications with TypeScript support and persistence options.",
+  "theme": "palm",
+  "primaryColor": "#443E38",
+  "lightColor": "#7C6F64",
+  "darkColor": "#2B2620",
+  "navigation": {
+    "groups": [
+      {
+        "group": "Getting Started",
+        "pages": [
+          "introduction",
+          "installation",
+          "quickstart"
+        ]
+      },
+      {
+        "group": "Command Reference",
+        "pages": [
+          "commands/create-store",
+          "commands/options",
+          "commands/configuration"
+        ]
+      },
+      {
+        "group": "Guides",
+        "pages": [
+          "guides/basic-store",
+          "guides/typescript-store",
+          "guides/persistent-store",
+          "guides/actions-state"
+        ]
+      },
+      {
+        "group": "Configuration",
+        "pages": [
+          "configuration/config-file",
+          "configuration/templates",
+          "configuration/package-managers"
+        ]
+      },
+      {
+        "group": "Examples",
+        "pages": [
+          "examples/counter-store",
+          "examples/user-store",
+          "examples/todo-store"
+        ]
+      },
+      {
+        "group": "Resources",
+        "pages": [
+          "troubleshooting",
+          "faq",
+          "contributing"
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Interactive CLI for creating Zustand stores",
+    "TypeScript and JavaScript support",
+    "Optional persistence with zustand/middleware",
+    "Custom initial state and actions",
+    "Save configuration for reuse",
+    "Automatic dependency installation",
+    "Custom store directory paths"
+  ],
+  "publicApiSurface": [
+    "create-zustand-store (main command)",
+    "storeName option",
+    "fileType option (JavaScript/TypeScript)",
+    "addPersist option",
+    "initialState option",
+    "actions option",
+    "packageManager option (npm/yarn)",
+    "storePath option",
+    "saveConfig option",
+    "zustand-store-config.json configuration file"
+  ]
+}
